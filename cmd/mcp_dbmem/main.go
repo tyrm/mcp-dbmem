@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action/direct"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action/migrate"
-	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action/start"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/flag"
 	"github.com/tyrm/mcp-dbmem/internal/config"
 	"go.uber.org/zap"
@@ -54,13 +54,13 @@ func main() {
 	flag.Global(rootCmd, config.Defaults)
 
 	serverStartCmd := &cobra.Command{
-		Use:   "start",
-		Short: "start the mcp server",
+		Use:   "direct",
+		Short: "the mcp will connect directly to the database",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return preRun(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return run(cmd.Context(), start.Start, args)
+			return run(cmd.Context(), direct.Start, args)
 		},
 	}
 	rootCmd.AddCommand(serverStartCmd)

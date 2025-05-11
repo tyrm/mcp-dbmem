@@ -43,7 +43,7 @@ The service provides the following tools:
         "-i",
         "--rm",
         "tyrm/mcp-pgmem",
-        "start"
+        "direct"
       ]
     }
   }
