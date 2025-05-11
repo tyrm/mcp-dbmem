@@ -1,3 +1,3 @@
 FROM alpine
-ENTRYPOINT ["/mcp-pgmem"]
-COPY mcp-pgmem /
+ENTRYPOINT ["/mcp-dbmem"]
+COPY mcp-dbmem /

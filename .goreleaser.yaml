@@ -2,8 +2,8 @@ before:
   hooks:
     - go generate ./...
 builds:
-  - main: ./cmd/mcp_pgmem
-    binary: mcp-pgmem
+  - main: ./cmd/mcp_dbmem
+    binary: mcp-dbmem
     ldflags:
       - -s
       - -w
