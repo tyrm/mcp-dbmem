@@ -7,11 +7,11 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem/action"
-	"github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem/action/migrate"
-	"github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem/action/start"
-	"github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem/flag"
-	"github.com/tyrm/mcp-pgmem/internal/config"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_pgmem/action"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_pgmem/action/migrate"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_pgmem/action/start"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_pgmem/flag"
+	"github.com/tyrm/mcp-dbmem/internal/config"
 	"go.uber.org/zap"
 )
 

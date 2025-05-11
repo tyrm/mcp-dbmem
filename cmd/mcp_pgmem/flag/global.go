@@ -2,7 +2,7 @@ package flag
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tyrm/mcp-pgmem/internal/config"
+	"github.com/tyrm/mcp-dbmem/internal/config"
 )
 
 // Global adds flags that are common to all commands.

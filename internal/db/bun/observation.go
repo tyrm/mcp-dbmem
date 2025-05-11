@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/tyrm/mcp-pgmem/internal/db"
-	"github.com/tyrm/mcp-pgmem/internal/models"
+	"github.com/tyrm/mcp-dbmem/internal/db"
+	"github.com/tyrm/mcp-dbmem/internal/models"
 	"github.com/uptrace/bun"
 )
 

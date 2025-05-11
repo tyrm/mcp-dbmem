@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/jackc/pgconn"
-	"github.com/tyrm/mcp-pgmem/internal/db"
+	"github.com/tyrm/mcp-dbmem/internal/db"
 	"go.uber.org/zap"
 	"modernc.org/sqlite"
 	sqlite3 "modernc.org/sqlite/lib"

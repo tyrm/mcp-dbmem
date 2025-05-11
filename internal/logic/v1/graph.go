@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	mcp "github.com/metoro-io/mcp-golang"
-	"github.com/tyrm/mcp-pgmem/internal/db"
+	"github.com/tyrm/mcp-dbmem/internal/db"
 	"go.uber.org/zap"
 )
 

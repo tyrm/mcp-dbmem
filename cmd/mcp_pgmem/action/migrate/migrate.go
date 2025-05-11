@@ -3,8 +3,8 @@ package migrate
 import (
 	"context"
 
-	"github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem/action"
-	"github.com/tyrm/mcp-pgmem/internal/db/bun"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_pgmem/action"
+	"github.com/tyrm/mcp-dbmem/internal/db/bun"
 	"go.uber.org/zap"
 )
 

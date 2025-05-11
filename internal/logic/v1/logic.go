@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	mcp "github.com/metoro-io/mcp-golang"
-	"github.com/tyrm/mcp-pgmem/internal/db"
-	"github.com/tyrm/mcp-pgmem/internal/logic"
+	"github.com/tyrm/mcp-dbmem/internal/db"
+	"github.com/tyrm/mcp-dbmem/internal/logic"
 )
 
 // Logic implements the program logic

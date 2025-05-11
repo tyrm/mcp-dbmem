@@ -4,7 +4,7 @@ import (
 	"context"
 
 	mcp "github.com/metoro-io/mcp-golang"
-	"github.com/tyrm/mcp-pgmem/internal/models"
+	"github.com/tyrm/mcp-dbmem/internal/models"
 	"go.uber.org/zap"
 )
 
@@ -50,7 +50,7 @@ func (l *Logic) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*m
 
 		response = append(response, newEntityResponse)
 	}
-	
+
 	// convert response to json string
 	toolResponse, err := toolJSONResponse(ctx, response)
 	if err != nil {

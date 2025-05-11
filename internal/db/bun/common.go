@@ -3,7 +3,7 @@ package bun
 import (
 	"context"
 
-	"github.com/tyrm/mcp-pgmem/internal/db"
+	"github.com/tyrm/mcp-dbmem/internal/db"
 )
 
 func (c *Client) create(ctx context.Context, o any) db.Error {

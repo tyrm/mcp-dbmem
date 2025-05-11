@@ -9,9 +9,9 @@ import (
 
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
-	"github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem/action"
-	"github.com/tyrm/mcp-pgmem/internal/db/bun"
-	v1 "github.com/tyrm/mcp-pgmem/internal/logic/v1"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_pgmem/action"
+	"github.com/tyrm/mcp-dbmem/internal/db/bun"
+	v1 "github.com/tyrm/mcp-dbmem/internal/logic/v1"
 	"go.uber.org/zap"
 )
 

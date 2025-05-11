@@ -1,4 +1,4 @@
-module github.com/tyrm/mcp-pgmem
+module github.com/tyrm/mcp-dbmem
 
 go 1.24
 

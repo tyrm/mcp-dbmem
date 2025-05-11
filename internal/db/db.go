@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tyrm/mcp-pgmem/internal/models"
+	"github.com/tyrm/mcp-dbmem/internal/models"
 )
 
 // DB is the interface that wraps the basic database operations.

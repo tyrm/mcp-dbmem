@@ -3,7 +3,7 @@ package migrations
 import (
 	"context"
 
-	models "github.com/tyrm/mcp-pgmem/internal/db/bun/migrations/20250505224701_new"
+	models "github.com/tyrm/mcp-dbmem/internal/db/bun/migrations/20250505224701_new"
 	"github.com/uptrace/bun"
 	"tyr.codes/libs/libmigration"
 )
