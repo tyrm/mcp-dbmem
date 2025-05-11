@@ -55,12 +55,12 @@ func main() {
 
 	serverStartCmd := &cobra.Command{
 		Use:   "direct",
-		Short: "the mcp will connect directly to the database",
+		Short: "the mcp server will connect directly to the database",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return preRun(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return run(cmd.Context(), direct.Start, args)
+			return run(cmd.Context(), direct.Direct, args)
 		},
 	}
 	rootCmd.AddCommand(serverStartCmd)
