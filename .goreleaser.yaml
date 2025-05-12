@@ -22,20 +22,20 @@ builds:
       - windows
       - darwin
     mod_timestamp: "{{ .CommitTimestamp }}"
-dockers:
-  - use: buildx
-    goos: linux
-    goarch: amd64
-    skip_push: true
-    image_templates:
-      - "tyrm/{{ .ProjectName }}:{{ .Version }}-amd64"
-      - "tyrm/{{ .ProjectName }}:latest-amd64"
-    build_flag_templates:
-      - "--platform=linux/amd64"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
+#dockers:
+#  - use: buildx
+#    goos: linux
+#    goarch: amd64
+#    skip_push: true
+#    image_templates:
+#      - "tyrm/{{ .ProjectName }}:{{ .Version }}-amd64"
+#      - "tyrm/{{ .ProjectName }}:latest-amd64"
+#    build_flag_templates:
+#      - "--platform=linux/amd64"
+#      - "--label=org.opencontainers.image.created={{.Date}}"
+#      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+#      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+#      - "--label=org.opencontainers.image.version={{.Version}}"
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256

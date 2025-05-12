@@ -3,28 +3,34 @@ package direct
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
-	"github.com/tyrm/mcp-dbmem/internal/config"
-	"github.com/uptrace/uptrace-go/uptrace"
 	"os"
 	"os/signal"
 	"syscall"
 
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
+	"github.com/spf13/viper"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action"
+	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/db/bun"
 	v1 "github.com/tyrm/mcp-dbmem/internal/logic/v1"
+	"github.com/uptrace/uptrace-go/uptrace"
 	"go.uber.org/zap"
 )
 
 var Direct action.Action = func(ctx context.Context, _ []string) error {
 	zap.L().Info("starting pgmcp")
 
-	uptrace.ConfigureOpentelemetry(
-		uptrace.WithServiceName("mcp-dbmem"),
-		uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
-	)
+	// Setup tracing
+	if viper.GetString(config.Keys.UptraceDSN) != "" {
+		uptrace.ConfigureOpentelemetry(
+			uptrace.WithServiceName("mcp-dbmem"),
+			uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
+			uptrace.WithDSN(viper.GetString(config.Keys.UptraceDSN)),
+		)
+		// Send buffered spans and free resources.
+		defer uptrace.Shutdown(context.Background())
+	}
 
 	// create database client
 	dbClient, err := bun.New(ctx)

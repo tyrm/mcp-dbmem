@@ -5,6 +5,9 @@ type Values struct {
 	LogLevel        string
 	SoftwareVersion string
 
+	// uptrace
+	UptraceDSN string
+
 	// database
 	DBType      string
 	DBAddress   string

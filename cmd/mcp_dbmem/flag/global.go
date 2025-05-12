@@ -8,4 +8,5 @@ import (
 // Global adds flags that are common to all commands.
 func Global(cmd *cobra.Command, values config.Values) {
 	cmd.PersistentFlags().String(config.Keys.LogLevel, values.LogLevel, usage.LogLevel)
+	cmd.PersistentFlags().String(config.Keys.UptraceDSN, values.UptraceDSN, usage.UptraceDSN)
 }

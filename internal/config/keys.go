@@ -5,6 +5,9 @@ type KeyNames struct {
 	LogLevel        string
 	SoftwareVersion string
 
+	// uptrace
+	UptraceDSN string
+
 	// database
 	DBType      string
 	DBAddress   string
@@ -20,6 +23,9 @@ type KeyNames struct {
 var Keys = KeyNames{
 	LogLevel:        "log-level",
 	SoftwareVersion: "software-version", // Set at build
+
+	// uptrace
+	UptraceDSN: "uptrace-dsn",
 
 	// database
 	DBType:      "db-type",
