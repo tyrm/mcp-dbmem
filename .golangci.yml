@@ -12,7 +12,14 @@ linters:
     - contextcheck
     - copyloopvar
     - cyclop
+    - decorder
+    - dogsled
     - dupl
+    - dupword
+    - durationcheck
+    - errchkjson
+    - errname
+    - errorlint
     - gocognit
     - goconst
     - gocritic

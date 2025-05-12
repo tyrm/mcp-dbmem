@@ -86,7 +86,7 @@ func main() {
 
 func preRun(cmd *cobra.Command) error {
 	if err := config.Init(cmd.Flags()); err != nil {
-		return fmt.Errorf("error initializing config: %s", err)
+		return fmt.Errorf("error initializing config: %w", err)
 	}
 
 	return nil

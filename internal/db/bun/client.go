@@ -116,10 +116,11 @@ func sqliteConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	// Open new DB instance
 	sqldb, err := sql.Open("sqlite", dbAddress)
 	if err != nil {
-		if errWithCode, ok := err.(*sqlite.Error); ok {
+		errWithCode := &sqlite.Error{}
+		if errors.As(err, &errWithCode) {
 			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
 		}
-		return nil, fmt.Errorf("could not open sqlite bun: %s", err)
+		return nil, fmt.Errorf("could not open sqlite bun: %w", err)
 	}
 
 	setConnectionValues(sqldb)
@@ -136,10 +137,11 @@ func sqliteConn(ctx context.Context, c ClientConfig) (*Client, error) {
 
 	// ping to check the bun is there and listening
 	if err := conn.db.PingContext(ctx); err != nil {
-		if errWithCode, ok := err.(*sqlite.Error); ok {
+		errWithCode := &sqlite.Error{}
+		if errors.As(err, &errWithCode) {
 			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
 		}
-		return nil, fmt.Errorf("sqlite ping: %s", err)
+		return nil, fmt.Errorf("sqlite ping: %w", err)
 	}
 
 	zap.L().Info("Connected to database", zap.String("db_type", "sqlite"))
@@ -149,12 +151,12 @@ func sqliteConn(ctx context.Context, c ClientConfig) (*Client, error) {
 func myConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	opts, err := deriveBunDBMyOptions(c)
 	if err != nil {
-		return nil, fmt.Errorf("could not create bundb mysql options: %s", err)
+		return nil, fmt.Errorf("could not create bundb mysql options: %w", err)
 	}
 
 	sqldb, err := sql.Open("mysql", opts)
 	if err != nil {
-		return nil, fmt.Errorf("could not open mysql connection: %s", err)
+		return nil, fmt.Errorf("could not open mysql connection: %w", err)
 	}
 
 	setConnectionValues(sqldb)
@@ -163,7 +165,7 @@ func myConn(ctx context.Context, c ClientConfig) (*Client, error) {
 
 	// ping to check the bun is there and listening
 	if err := conn.db.PingContext(ctx); err != nil {
-		return nil, fmt.Errorf("postgres ping: %s", err)
+		return nil, fmt.Errorf("postgres ping: %w", err)
 	}
 
 	zap.L().Info("Connected to database", zap.String("db_type", "mysql"))
@@ -173,7 +175,7 @@ func myConn(ctx context.Context, c ClientConfig) (*Client, error) {
 func pgConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	opts, err := deriveBunDBPGOptions(c)
 	if err != nil {
-		return nil, fmt.Errorf("could not doCreate bundb postgres options: %s", err)
+		return nil, fmt.Errorf("could not doCreate bundb postgres options: %w", err)
 	}
 
 	sqldb := stdlib.OpenDB(*opts)
@@ -184,7 +186,7 @@ func pgConn(ctx context.Context, c ClientConfig) (*Client, error) {
 
 	// ping to check the bun is there and listening
 	if err := conn.db.PingContext(ctx); err != nil {
-		return nil, fmt.Errorf("postgres ping: %s", err)
+		return nil, fmt.Errorf("postgres ping: %w", err)
 	}
 
 	zap.L().Info("Connected to database", zap.String("db_type", "postgres"))
@@ -207,7 +209,7 @@ func deriveBunDBMyOptions(c ClientConfig) (string, error) {
 	tlsConfig, err := makeTLSConfig(c)
 	if err != nil {
 		zap.L().Error("Error creating TLS config", zap.Error(err))
-		return "", fmt.Errorf("could not create tls config: %s", err)
+		return "", fmt.Errorf("could not create tls config: %w", err)
 	}
 
 	cfg := ""
@@ -230,7 +232,7 @@ func deriveBunDBMyOptions(c ClientConfig) (string, error) {
 	// options
 	if tlsConfig != nil {
 		if err := mysql.RegisterTLSConfig("bun", tlsConfig); err != nil {
-			return "", fmt.Errorf("could not register tls config: %s", err)
+			return "", fmt.Errorf("could not register tls config: %w", err)
 		}
 
 		cfg += "?tls=bun"
@@ -255,7 +257,7 @@ func deriveBunDBPGOptions(c ClientConfig) (*pgx.ConnConfig, error) {
 	tlsConfig, err := makeTLSConfig(c)
 	if err != nil {
 		zap.L().Error("Error creating TLS config", zap.Error(err))
-		return nil, fmt.Errorf("could not create tls config: %s", err)
+		return nil, fmt.Errorf("could not create tls config: %w", err)
 	}
 
 	cfg, _ := pgx.ParseConfig("")
@@ -313,13 +315,13 @@ func makeTLSConfig(c ClientConfig) (*tls.Config, error) {
 		// load the system cert pool first -- we'll append the given CA cert to this
 		certPool, err := x509.SystemCertPool()
 		if err != nil {
-			return nil, fmt.Errorf("error fetching system CA cert pool: %s", err)
+			return nil, fmt.Errorf("error fetching system CA cert pool: %w", err)
 		}
 
 		// read the CA cert from the file
 		caCert, err := readCertFile(caCertPath)
 		if err != nil {
-			return nil, fmt.Errorf("error reading CA cert file %s: %s", caCertPath, err)
+			return nil, fmt.Errorf("error reading CA cert file %s: %w", caCertPath, err)
 		}
 
 		// we're happy, add it to the existing pool and then use this pool in our tls config
@@ -335,7 +337,7 @@ func readCertFile(caCertPath string) (*x509.Certificate, error) {
 	/* #nosec G304 */
 	caCertBytes, err := os.ReadFile(caCertPath)
 	if err != nil {
-		return nil, fmt.Errorf("error opening CA certificate at %s: %s", caCertPath, err)
+		return nil, fmt.Errorf("error opening CA certificate at %s: %w", caCertPath, err)
 	}
 	if len(caCertBytes) == 0 {
 		return nil, fmt.Errorf("ca cert at %s was empty", caCertPath)
@@ -350,7 +352,7 @@ func readCertFile(caCertPath string) (*x509.Certificate, error) {
 	// parse the PEM block into the certificate
 	caCert, err := x509.ParseCertificate(caPem.Bytes)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse cert at %s into x509 certificate: %s", caCertPath, err)
+		return nil, fmt.Errorf("could not parse cert at %s into x509 certificate: %w", caCertPath, err)
 	}
 
 	return caCert, nil
