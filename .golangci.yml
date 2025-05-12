@@ -35,9 +35,19 @@ linters:
     - gocyclo
     - godot
     - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
     - gosec
+    - gosmopolitan
+    - grouper
+    - iface
     - importas
+    - inamedparam
+    - interfacebloat
+    - intrange
     - ireturn
+    - lll
 
   settings:
     ireturn:
