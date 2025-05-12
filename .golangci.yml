@@ -53,6 +53,14 @@ linters:
     - mirror
     - misspell
     - mnd
+    - musttag
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - noctx
+    - nolintlint
 
   settings:
     ireturn:
