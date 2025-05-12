@@ -87,6 +87,7 @@ linters:
     - usetesting
     - varnamelen
     - wastedassign
+    - whitespace
 
   settings:
     ireturn:
