@@ -316,26 +316,10 @@ func makeTLSConfig(c ClientConfig) (*tls.Config, error) {
 			return nil, fmt.Errorf("error fetching system CA cert pool: %s", err)
 		}
 
-		// open the file itself and make sure there's something in it
-		/* #nosec G304 */
-		caCertBytes, err := os.ReadFile(caCertPath)
+		// read the CA cert from the file
+		caCert, err := readCertFile(caCertPath)
 		if err != nil {
-			return nil, fmt.Errorf("error opening CA certificate at %s: %s", caCertPath, err)
-		}
-		if len(caCertBytes) == 0 {
-			return nil, fmt.Errorf("ca cert at %s was empty", caCertPath)
-		}
-
-		// make sure we have a PEM block
-		caPem, _ := pem.Decode(caCertBytes)
-		if caPem == nil {
-			return nil, fmt.Errorf("could not parse cert at %s into PEM", caCertPath)
-		}
-
-		// parse the PEM block into the certificate
-		caCert, err := x509.ParseCertificate(caPem.Bytes)
-		if err != nil {
-			return nil, fmt.Errorf("could not parse cert at %s into x509 certificate: %s", caCertPath, err)
+			return nil, fmt.Errorf("error reading CA cert file %s: %s", caCertPath, err)
 		}
 
 		// we're happy, add it to the existing pool and then use this pool in our tls config
@@ -344,6 +328,32 @@ func makeTLSConfig(c ClientConfig) (*tls.Config, error) {
 	}
 
 	return tlsConfig, nil
+}
+
+func readCertFile(caCertPath string) (*x509.Certificate, error) {
+	// open the file itself and make sure there's something in it
+	/* #nosec G304 */
+	caCertBytes, err := os.ReadFile(caCertPath)
+	if err != nil {
+		return nil, fmt.Errorf("error opening CA certificate at %s: %s", caCertPath, err)
+	}
+	if len(caCertBytes) == 0 {
+		return nil, fmt.Errorf("ca cert at %s was empty", caCertPath)
+	}
+
+	// make sure we have a PEM block
+	caPem, _ := pem.Decode(caCertBytes)
+	if caPem == nil {
+		return nil, fmt.Errorf("could not parse cert at %s into PEM", caCertPath)
+	}
+
+	// parse the PEM block into the certificate
+	caCert, err := x509.ParseCertificate(caPem.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse cert at %s into x509 certificate: %s", caCertPath, err)
+	}
+
+	return caCert, nil
 }
 
 func getErrConn(dbConn *bun.DB) *Client {
