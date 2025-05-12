@@ -167,7 +167,7 @@ func myConn(ctx context.Context, cfg ClientConfig) (*Client, error) {
 
 	// ping to check the bun is there and listening
 	if err := conn.db.PingContext(ctx); err != nil {
-		return nil, fmt.Errorf("postgres ping: %w", err)
+		return nil, fmt.Errorf("mysql ping: %w", err)
 	}
 
 	zap.L().Info("Connected to database", zap.String("db_type", "mysql"))
