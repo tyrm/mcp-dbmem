@@ -1,6 +1,8 @@
 package db
 
-import "fmt"
+import (
+	"errors"
+)
 
 // Error represents a database specific error.
 type Error error
