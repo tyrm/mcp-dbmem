@@ -15,6 +15,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const minimumHashLength = 7
+
 // Version is the software version.
 var Version string
 
@@ -35,7 +37,7 @@ func main() {
 
 	// set software version
 	var v string
-	if len(Commit) < 7 {
+	if len(Commit) < minimumHashLength {
 		v = "v" + Version
 	} else {
 		v = "v" + Version + "-" + Commit[:7]

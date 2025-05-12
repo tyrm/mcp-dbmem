@@ -39,6 +39,8 @@ const (
 	dbTLSModeEnable  = "enable"
 	dbTLSModeRequire = "require"
 	dbTLSModeUnset   = ""
+
+	openConnectionsPerCore = 4
 )
 
 // Client is a DB interface compatible client for Bun.
@@ -286,7 +288,7 @@ func deriveBunDBPGOptions(c ClientConfig) (*pgx.ConnConfig, error) {
 
 // https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql
 func setConnectionValues(sqldb *sql.DB) {
-	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
+	maxOpenConns := openConnectionsPerCore * runtime.GOMAXPROCS(0)
 	sqldb.SetMaxOpenConns(maxOpenConns)
 	sqldb.SetMaxIdleConns(maxOpenConns)
 }

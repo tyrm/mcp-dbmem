@@ -47,13 +47,22 @@ linters:
     - interfacebloat
     - intrange
     - ireturn
-    - lll
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror
+    - misspell
+    - mnd
 
   settings:
     ireturn:
       allow:
         - error
         - db.Error
+    mnd:
+      ignored-files:
+        - 'internal\\config\\.+\.go'
+
 
 run:
   issues-exit-code: 1
