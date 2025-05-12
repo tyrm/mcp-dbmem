@@ -1,9 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="mcp-pgmem" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="mcp-dbmem start" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="mcp-pgmem" />
     <working_directory value="$PROJECT_DIR$" />
+    <parameters value="start" />
     <kind value="PACKAGE" />
-    <package value="github.com/tyrm/mcp-pgmem/cmd/mcp_pgmem" />
+    <package value="github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
     <method v="2" />
