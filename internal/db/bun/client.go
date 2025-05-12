@@ -79,10 +79,10 @@ func New(ctx context.Context) (*Client, error) {
 	newBun.db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(viper.GetString(config.Keys.DBDatabase))))
 
 	// Add a query hook to log all queries (debug)
-	//newBun.db.AddQueryHook(bunzap.NewQueryHook(bunzap.QueryHookOptions{
-	//	Logger: zap.L(),
-	//	//SlowDuration: 200 * time.Millisecond, // Omit to log all operations as debug
-	//}))
+	// newBun.db.AddQueryHook(bunzap.NewQueryHook(bunzap.QueryHookOptions{
+	// 	Logger: zap.L(),
+	// 	//SlowDuration: 200 * time.Millisecond, // Omit to log all operations as debug
+	// }))
 
 	return newBun, nil
 }
@@ -249,20 +249,20 @@ func deriveBunDBMyOptions() (string, error) {
 
 	cfg := ""
 	if username != "" {
-		cfg = cfg + username
+		cfg += username
 		if password != "" {
-			cfg = cfg + ":" + password
+			cfg += ":" + password
 		}
-		cfg = cfg + "@"
+		cfg += "@"
 	}
 	if address != "" {
-		cfg = cfg + "tcp(" + address
+		cfg += "tcp(" + address
 		if port > 0 {
-			cfg = cfg + ":" + strconv.Itoa(port)
+			cfg += ":" + strconv.Itoa(port)
 		}
-		cfg = cfg + ")"
+		cfg += ")"
 	}
-	cfg = cfg + "/" + database
+	cfg += "/" + database
 
 	// options
 	if tlsConfig != nil {

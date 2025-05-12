@@ -4,6 +4,19 @@ version: "2"
 linters:
   enable:
     - importas
+    - ireturn
+    - gocognit
+    - gocritic
+    - goconst
+    - gocyclo
+    - goheader
+    - gosec
+
+  settings:
+    ireturn:
+      allow:
+        - error
+        - db.Error
 
 run:
   issues-exit-code: 1

@@ -45,7 +45,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:           "mcp-dbmem",
-		Short:         "", //TODO
+		Short:         "", // TODO
 		Version:       v,
 		SilenceErrors: true,
 		SilenceUsage:  true,

@@ -9,6 +9,12 @@ import (
 	"go.uber.org/zap"
 )
 
+// KnowledgeGraph represents the entire knowledge graph
+type KnowledgeGraph struct {
+	Entities  []Entity   `json:"entities"`
+	Relations []Relation `json:"relations"`
+}
+
 // ReadGraphArgs represents the arguments for reading the knowledge graph
 type ReadGraphArgs struct {
 }
