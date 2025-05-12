@@ -265,19 +265,12 @@ func deriveBunDBMyOptions() (string, error) {
 	cfg = cfg + "/" + database
 
 	// options
-	first := true // is this the first config added
 	if tlsConfig != nil {
-		err := mysql.RegisterTLSConfig("bun", tlsConfig)
-		if err != nil {
+		if err := mysql.RegisterTLSConfig("bun", tlsConfig); err != nil {
 			return "", fmt.Errorf("could not register tls config: %s", err)
 		}
 
-		if first {
-			cfg = cfg + "?"
-			first = false
-		}
-
-		cfg = cfg + "tls=bun"
+		cfg += "?tls=bun"
 	}
 
 	return cfg, nil
