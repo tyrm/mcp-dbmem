@@ -29,7 +29,11 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 			uptrace.WithDSN(viper.GetString(config.Keys.UptraceDSN)),
 		)
 		// Send buffered spans and free resources.
-		defer uptrace.Shutdown(context.Background())
+		defer func() {
+			if err := uptrace.Shutdown(context.Background()); err != nil {
+				zap.L().Error("Error shutting down uptrace", zap.Error(err))
+			}
+		}()
 	}
 
 	// create database client
@@ -81,8 +85,6 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-
 	// ** start application **
 	errChan := make(chan error)
 
@@ -108,6 +110,5 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	}
 
 	zap.L().Info("done")
-	cancel()
 	return nil
 }

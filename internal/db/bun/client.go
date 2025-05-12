@@ -132,7 +132,7 @@ func sqliteConn(ctx context.Context) (*Client, error) {
 		return nil, fmt.Errorf("sqlite ping: %s", err)
 	}
 
-	zap.L().Info("connected to SQLITE database")
+	zap.L().Info("Connected to database", zap.String("db_type", "sqlite"))
 	return conn, nil
 }
 
@@ -156,7 +156,7 @@ func myConn(ctx context.Context) (*Client, error) {
 		return nil, fmt.Errorf("postgres ping: %s", err)
 	}
 
-	zap.L().Info("connected to MYSQL database")
+	zap.L().Info("Connected to database", zap.String("db_type", "mysql"))
 	return conn, nil
 }
 
@@ -177,7 +177,7 @@ func pgConn(ctx context.Context) (*Client, error) {
 		return nil, fmt.Errorf("postgres ping: %s", err)
 	}
 
-	zap.L().Info("connected to POSTGRES database")
+	zap.L().Info("Connected to database", zap.String("db_type", "postgres"))
 	return conn, nil
 }
 
@@ -398,7 +398,7 @@ func getErrConn(dbConn *bun.DB) *Client {
 
 // Close closes the bun db connection.
 func (c *Client) Close() db.Error {
-	zap.L().Info("Closing db connection")
+	zap.L().Info("Closing db connection", zap.String("db_dialect", c.db.Dialect().Name().String()))
 
 	return c.db.Close()
 }
@@ -414,6 +414,7 @@ func (c *Client) DoMigration(ctx context.Context) db.Error {
 	group, err := migrator.Migrate(ctx)
 	if err != nil {
 		if err.Error() == "migrate: there are no any migrations" {
+			zap.L().Info("No migrations to run", zap.String("db_dialect", c.db.Dialect().Name().String()))
 			return nil
 		}
 
@@ -421,11 +422,10 @@ func (c *Client) DoMigration(ctx context.Context) db.Error {
 	}
 
 	if group.ID == 0 {
-		zap.L().Info("No migrations to run")
-
+		zap.L().Info("No migrations to run", zap.String("db_dialect", c.db.Dialect().Name().String()))
 		return nil
 	}
-	zap.L().Info("Migration successful", zap.String("group", group.String()))
+	zap.L().Info("Migration successful", zap.String("db_dialect", c.db.Dialect().Name().String()), zap.String("group", group.String()))
 
 	return nil
 }

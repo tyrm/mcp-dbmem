@@ -1,0 +1,9 @@
+---
+version: "2"
+
+linters:
+  enable:
+    - importas
+
+run:
+  issues-exit-code: 1

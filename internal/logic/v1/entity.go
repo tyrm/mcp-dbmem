@@ -88,13 +88,13 @@ func (l *Logic) DeleteEntities(ctx context.Context, args DeleteEntitiesArgs) (*m
 		}
 
 		if err := l.DB.DeleteAllObservationsByEntityID(ctx, entity.ID); err != nil {
-			zap.L().Error("can't delete observations", zap.Error(err), zap.String("entityName", entityName))
+			zap.L().Error("Can't delete observations", zap.Error(err), zap.String("entityName", entityName))
 			span.RecordError(err)
 			return nil, err
 		}
 
 		if err := l.DB.DeleteEntity(ctx, entity); err != nil {
-			zap.L().Error("can't delete entity", zap.Error(err), zap.String("entityName", entityName))
+			zap.L().Error("Can't delete entity", zap.Error(err), zap.String("entityName", entityName))
 			span.RecordError(err)
 			return nil, err
 		}

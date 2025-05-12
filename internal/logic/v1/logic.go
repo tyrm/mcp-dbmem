@@ -17,7 +17,7 @@ type Logic struct {
 var _ logic.Logic = (*Logic)(nil)
 
 func toolJSONResponse(ctx context.Context, response any) (*mcp.ToolResponse, error) {
-	ctx, span := tracer.Start(ctx, "toolJSONResponse", tracerAttrs...)
+	_, span := tracer.Start(ctx, "toolJSONResponse", tracerAttrs...)
 	defer span.End()
 
 	// convert response to json string
