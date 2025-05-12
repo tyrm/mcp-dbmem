@@ -19,12 +19,12 @@ type AddObservationsArgs struct {
 // AddObservation represents an observation associated with an entity.
 type AddObservation struct {
 	EntityName string   `json:"entityName" jsonschema:"required,description=The name of the entity to add the observations to"`
-	Contents   []string `json:"contents" jsonschema:"required,description=An array of observation contents to addAn array of observations"`
+	Contents   []string `json:"contents"   jsonschema:"required,description=An array of observation contents to addAn array of observations"`
 }
 
 // AddedObservationsResp represents the response for creating Observations.
 type AddedObservationsResp struct {
-	EntityName        string   `json:"entityName" jsonschema:"required,description=The name of the entity containing the observations"`
+	EntityName        string   `json:"entityName"        jsonschema:"required,description=The name of the entity containing the observations"`
 	AddedObservations []string `json:"addedObservations" jsonschema:"required,description=An array of observations"`
 }
 
@@ -82,7 +82,7 @@ type DeleteObservationsArgs struct {
 
 // DeleteObservation represents an observation associated with an entity.
 type DeleteObservation struct {
-	EntityName   string   `json:"entityName" jsonschema:"required,description=The name of the entity containing the observations"`
+	EntityName   string   `json:"entityName"   jsonschema:"required,description=The name of the entity containing the observations"`
 	Observations []string `json:"observations" jsonschema:"required,description=An array of observations to delete"`
 }
 

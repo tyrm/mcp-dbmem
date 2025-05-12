@@ -7,7 +7,7 @@ type Entity struct {
 	CreatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 	UpdatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 
-	Name         string         `bun:"name,notnull" json:"name"`
-	Type         string         `bun:"type,notnull" json:"type"`
+	Name         string         `bun:"name,notnull"                   json:"name"`
+	Type         string         `bun:"type,notnull"                   json:"type"`
 	Observations []*Observation `bun:"rel:has-many,join:id=entity_id" json:"observations"`
 }

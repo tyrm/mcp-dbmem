@@ -10,8 +10,8 @@ type Relation struct {
 
 	Type string `bun:"type,notnull" json:"type"`
 
-	FromID int64   `bun:"from_id,notnull" json:"from_id"`
+	FromID int64   `bun:"from_id,notnull"                json:"from_id"`
 	From   *Entity `bun:"rel:belongs-to,join:from_id=id" json:"from"`
-	ToID   int64   `bun:"to_id,notnull" json:"to_id"`
-	To     *Entity `bun:"rel:belongs-to,join:to_id=id" json:"to"`
+	ToID   int64   `bun:"to_id,notnull"                  json:"to_id"`
+	To     *Entity `bun:"rel:belongs-to,join:to_id=id"   json:"to"`
 }

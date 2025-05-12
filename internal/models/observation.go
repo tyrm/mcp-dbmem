@@ -10,6 +10,6 @@ type Observation struct {
 
 	Contents string `bun:"contents,notnull" json:"contents"`
 
-	EntityID int64   `bun:"entity_id,notnull" json:"entity_id"`
+	EntityID int64   `bun:"entity_id,notnull"                json:"entity_id"`
 	Entity   *Entity `bun:"rel:belongs-to,join:entity_id=id" json:"entity"`
 }

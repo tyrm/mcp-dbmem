@@ -13,8 +13,8 @@ import (
 
 // Relation represents a relationship between two entities in the knowledge graph.
 type Relation struct {
-	From string `json:"from" jsonschema:"required,description=The name of the entity where the relation starts"`
-	To   string `json:"to" jsonschema:"required,description=The name of the entity where the relation ends"`
+	From string `json:"from"         jsonschema:"required,description=The name of the entity where the relation starts"`
+	To   string `json:"to"           jsonschema:"required,description=The name of the entity where the relation ends"`
 	Type string `json:"relationType" jsonschema:"required,description=The type of the relation"`
 }
 
