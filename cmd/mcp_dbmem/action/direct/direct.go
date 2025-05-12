@@ -1,8 +1,11 @@
-package start
+package direct
 
 import (
 	"context"
 	"fmt"
+	"github.com/spf13/viper"
+	"github.com/tyrm/mcp-dbmem/internal/config"
+	"github.com/uptrace/uptrace-go/uptrace"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,8 +18,13 @@ import (
 	"go.uber.org/zap"
 )
 
-var Start action.Action = func(ctx context.Context, _ []string) error {
+var Direct action.Action = func(ctx context.Context, _ []string) error {
 	zap.L().Info("starting pgmcp")
+
+	uptrace.ConfigureOpentelemetry(
+		uptrace.WithServiceName("mcp-dbmem"),
+		uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
+	)
 
 	// create database client
 	dbClient, err := bun.New(ctx)

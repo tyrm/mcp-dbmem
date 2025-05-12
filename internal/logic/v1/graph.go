@@ -22,6 +22,7 @@ func (l *Logic) ReadGraph(ctx context.Context, _ ReadGraphArgs) (*mcp.ToolRespon
 	zap.L().Debug("Reading all entities from the database")
 	entities, err := l.DB.ReadAllEntities(ctx)
 	if err != nil && !errors.Is(err, db.ErrNoEntries) {
+		zap.L().Error("Can't read entities from the database", zap.Error(err))
 		span.RecordError(err)
 		return nil, err
 	}

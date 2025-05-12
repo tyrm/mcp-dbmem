@@ -26,6 +26,7 @@ func (l *Logic) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*m
 			Type: entity.Type,
 		}
 		if err := l.DB.CreateEntity(ctx, newEntity); err != nil {
+			zap.L().Error("Can't create entity from database", zap.Error(err), zap.Any("entity", newEntity))
 			span.RecordError(err)
 			return nil, err
 		}
@@ -41,6 +42,7 @@ func (l *Logic) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*m
 				Contents: observation,
 			}
 			if err := l.DB.CreateObservation(ctx, newObservation); err != nil {
+				zap.L().Error("Can't create observation in database", zap.Error(err), zap.Any("observation", newObservation))
 				span.RecordError(err)
 				return nil, err
 			}
@@ -54,7 +56,7 @@ func (l *Logic) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*m
 	// convert response to json string
 	toolResponse, err := toolJSONResponse(ctx, response)
 	if err != nil {
-		zap.L().Error("json marshal error", zap.Error(err))
+		zap.L().Error("Can't marshal response json", zap.Error(err))
 		span.RecordError(err)
 		return nil, err
 	}
@@ -76,19 +78,23 @@ func (l *Logic) DeleteEntities(ctx context.Context, args DeleteEntitiesArgs) (*m
 		// Process each entity
 		entity, err := l.DB.ReadEntityByName(ctx, entityName)
 		if err != nil {
+			zap.L().Error("Can't read entity from database", zap.Error(err), zap.String("entityName", entityName))
 			span.RecordError(err)
 			return nil, err
 		}
 		if entity == nil {
+			zap.L().Warn("Entity not found in database", zap.String("entityName", entityName))
 			continue
 		}
 
 		if err := l.DB.DeleteAllObservationsByEntityID(ctx, entity.ID); err != nil {
+			zap.L().Error("can't delete observations", zap.Error(err), zap.String("entityName", entityName))
 			span.RecordError(err)
 			return nil, err
 		}
 
 		if err := l.DB.DeleteEntity(ctx, entity); err != nil {
+			zap.L().Error("can't delete entity", zap.Error(err), zap.String("entityName", entityName))
 			span.RecordError(err)
 			return nil, err
 		}
