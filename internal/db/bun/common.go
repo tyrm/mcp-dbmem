@@ -6,12 +6,12 @@ import (
 	"github.com/tyrm/mcp-dbmem/internal/db"
 )
 
-func (c *Client) create(ctx context.Context, o any) db.Error {
+func (c *Client) create(ctx context.Context, model any) db.Error {
 	ctx, span := tracer.Start(ctx, "create", tracerAttrs...)
 	defer span.End()
 
 	query := c.db.NewInsert().
-		Model(o).
+		Model(model).
 		ExcludeColumn("created_at", "updated_at")
 
 	if _, err := query.Exec(ctx); err != nil {
@@ -22,13 +22,13 @@ func (c *Client) create(ctx context.Context, o any) db.Error {
 	return nil
 }
 
-func (c *Client) delete(ctx context.Context, o any) db.Error {
+func (c *Client) delete(ctx context.Context, model any) db.Error {
 	ctx, span := tracer.Start(ctx, "delete", tracerAttrs...)
 	defer span.End()
 
 	query := c.db.
 		NewDelete().
-		Model(o).
+		Model(model).
 		WherePK()
 
 	if _, err := query.Exec(ctx); err != nil {

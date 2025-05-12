@@ -36,19 +36,19 @@ func main() {
 	zap.ReplaceGlobals(zapLogger)
 
 	// set software version
-	var v string
+	var version string
 	if len(Commit) < minimumHashLength {
-		v = "v" + Version
+		version = "version" + Version
 	} else {
-		v = "v" + Version + "-" + Commit[:7]
+		version = "version" + Version + "-" + Commit[:7]
 	}
 
-	viper.Set(config.Keys.SoftwareVersion, v)
+	viper.Set(config.Keys.SoftwareVersion, version)
 
 	rootCmd := &cobra.Command{
 		Use:           "mcp-dbmem",
 		Short:         "", // TODO
-		Version:       v,
+		Version:       version,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}

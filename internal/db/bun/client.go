@@ -63,24 +63,24 @@ type ClientConfig struct {
 }
 
 // New creates a new bun database client.
-func New(ctx context.Context, c ClientConfig) (*Client, error) {
+func New(ctx context.Context, cfg ClientConfig) (*Client, error) {
 	var newBun *Client
 	var err error
-	dbType := c.Type
+	dbType := cfg.Type
 
 	switch dbType {
 	case dbTypeMysql:
-		newBun, err = myConn(ctx, c)
+		newBun, err = myConn(ctx, cfg)
 		if err != nil {
 			return nil, err
 		}
 	case dbTypePostgres:
-		newBun, err = pgConn(ctx, c)
+		newBun, err = pgConn(ctx, cfg)
 		if err != nil {
 			return nil, err
 		}
 	case dbTypeSqlite:
-		newBun, err = sqliteConn(ctx, c)
+		newBun, err = sqliteConn(ctx, cfg)
 		if err != nil {
 			return nil, err
 		}
@@ -88,7 +88,7 @@ func New(ctx context.Context, c ClientConfig) (*Client, error) {
 		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
 	}
 
-	newBun.db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(c.Database)))
+	newBun.db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(cfg.Database)))
 
 	// Add a query hook to log all queries (debug)
 	// newBun.db.AddQueryHook(bunzap.NewQueryHook(bunzap.QueryHookOptions{
@@ -101,11 +101,11 @@ func New(ctx context.Context, c ClientConfig) (*Client, error) {
 
 // privates
 
-func sqliteConn(ctx context.Context, c ClientConfig) (*Client, error) {
+func sqliteConn(ctx context.Context, cfg ClientConfig) (*Client, error) {
 	// validate bun address has actually been set
-	dbAddress := c.Address
+	dbAddress := cfg.Address
 	if dbAddress == "" {
-		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", c.Address)
+		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", cfg.Address)
 	}
 
 	// Drop anything fancy from DB address
@@ -150,8 +150,8 @@ func sqliteConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	return conn, nil
 }
 
-func myConn(ctx context.Context, c ClientConfig) (*Client, error) {
-	opts, err := deriveBunDBMyOptions(c)
+func myConn(ctx context.Context, cfg ClientConfig) (*Client, error) {
+	opts, err := deriveBunDBMyOptions(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("could not create bundb mysql options: %w", err)
 	}
@@ -174,8 +174,8 @@ func myConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	return conn, nil
 }
 
-func pgConn(ctx context.Context, c ClientConfig) (*Client, error) {
-	opts, err := deriveBunDBPGOptions(c)
+func pgConn(ctx context.Context, cfg ClientConfig) (*Client, error) {
+	opts, err := deriveBunDBPGOptions(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("could not doCreate bundb postgres options: %w", err)
 	}
@@ -195,41 +195,41 @@ func pgConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	return conn, nil
 }
 
-func deriveBunDBMyOptions(c ClientConfig) (string, error) {
+func deriveBunDBMyOptions(cfg ClientConfig) (string, error) {
 	// these are all optional, the bun adapter figures out defaults
-	port := c.Port
-	address := c.Address
-	username := c.User
-	password := c.Password
+	port := cfg.Port
+	address := cfg.Address
+	username := cfg.User
+	password := cfg.Password
 
 	// validate database
-	database := c.Database
+	database := cfg.Database
 	if database == "" {
 		return "", errors.New("no database set")
 	}
 
-	tlsConfig, err := makeTLSConfig(c)
+	tlsConfig, err := makeTLSConfig(cfg)
 	if err != nil {
 		zap.L().Error("Error creating TLS config", zap.Error(err))
 		return "", fmt.Errorf("could not create tls config: %w", err)
 	}
 
-	cfg := ""
+	mysqlOptions := ""
 	if username != "" {
-		cfg += username
+		mysqlOptions += username
 		if password != "" {
-			cfg += ":" + password
+			mysqlOptions += ":" + password
 		}
-		cfg += "@"
+		mysqlOptions += "@"
 	}
 	if address != "" {
-		cfg += "tcp(" + address
+		mysqlOptions += "tcp(" + address
 		if port > 0 {
-			cfg += ":" + strconv.Itoa(int(port))
+			mysqlOptions += ":" + strconv.Itoa(int(port))
 		}
-		cfg += ")"
+		mysqlOptions += ")"
 	}
-	cfg += "/" + database
+	mysqlOptions += "/" + database
 
 	// options
 	if tlsConfig != nil {
@@ -237,53 +237,53 @@ func deriveBunDBMyOptions(c ClientConfig) (string, error) {
 			return "", fmt.Errorf("could not register tls config: %w", err)
 		}
 
-		cfg += "?tls=bun"
+		mysqlOptions += "?tls=bun"
 	}
 
-	return cfg, nil
+	return mysqlOptions, nil
 }
 
-func deriveBunDBPGOptions(c ClientConfig) (*pgx.ConnConfig, error) {
+func deriveBunDBPGOptions(cfg ClientConfig) (*pgx.ConnConfig, error) {
 	// these are all optional, the bun adapter figures out defaults
-	port := c.Port
-	address := c.Address
-	username := c.User
-	password := c.Password
+	port := cfg.Port
+	address := cfg.Address
+	username := cfg.User
+	password := cfg.Password
 
 	// validate database
-	database := c.Database
+	database := cfg.Database
 	if database == "" {
 		return nil, errors.New("no database set")
 	}
 
-	tlsConfig, err := makeTLSConfig(c)
+	tlsConfig, err := makeTLSConfig(cfg)
 	if err != nil {
 		zap.L().Error("Error creating TLS config", zap.Error(err))
 		return nil, fmt.Errorf("could not create tls config: %w", err)
 	}
 
-	cfg, _ := pgx.ParseConfig("")
+	postgresConfig, _ := pgx.ParseConfig("")
 	if address != "" {
-		cfg.Host = address
+		postgresConfig.Host = address
 	}
 	if port > 0 {
-		cfg.Port = port
+		postgresConfig.Port = port
 	}
 
 	if username != "" {
-		cfg.User = username
+		postgresConfig.User = username
 	}
 	if password != "" {
-		cfg.Password = password
+		postgresConfig.Password = password
 	}
 	if tlsConfig != nil {
-		cfg.TLSConfig = tlsConfig
+		postgresConfig.TLSConfig = tlsConfig
 	}
-	cfg.Database = database
-	cfg.PreferSimpleProtocol = true
-	cfg.RuntimeParams["application_name"] = config.ApplicationName
+	postgresConfig.Database = database
+	postgresConfig.PreferSimpleProtocol = true
+	postgresConfig.RuntimeParams["application_name"] = config.ApplicationName
 
-	return cfg, nil
+	return postgresConfig, nil
 }
 
 // https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql
@@ -293,9 +293,9 @@ func setConnectionValues(sqldb *sql.DB) {
 	sqldb.SetMaxIdleConns(maxOpenConns)
 }
 
-func makeTLSConfig(c ClientConfig) (*tls.Config, error) {
+func makeTLSConfig(cfg ClientConfig) (*tls.Config, error) {
 	var tlsConfig *tls.Config
-	tlsMode := c.TLSMode
+	tlsMode := cfg.TLSMode
 	switch tlsMode {
 	case dbTLSModeDisable, dbTLSModeUnset:
 		break // nothing to do
@@ -307,12 +307,12 @@ func makeTLSConfig(c ClientConfig) (*tls.Config, error) {
 	case dbTLSModeRequire:
 		tlsConfig = &tls.Config{
 			InsecureSkipVerify: false,
-			ServerName:         c.Address,
+			ServerName:         cfg.Address,
 			MinVersion:         tls.VersionTLS12,
 		}
 	}
 
-	caCertPath := c.TLSCACert
+	caCertPath := cfg.TLSCACert
 	if tlsConfig != nil && caCertPath != "" {
 		// load the system cert pool first -- we'll append the given CA cert to this
 		certPool, err := x509.SystemCertPool()

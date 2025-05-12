@@ -77,15 +77,30 @@ linters:
     - spancheck
     - sqlclosecheck
     - tagalign
+    - testableexamples
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - usetesting
+    - varnamelen
+    - wastedassign
 
   settings:
     ireturn:
       allow:
         - error
         - db.Error
+
     mnd:
       ignored-files:
         - 'internal\\config\\.+\.go'
+
+    varnamelen:
+      ignore-names:
+        - up
 
 
 run:

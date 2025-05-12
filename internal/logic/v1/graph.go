@@ -70,14 +70,14 @@ func (l *Logic) ReadGraph(ctx context.Context, _ ReadGraphArgs) (*mcp.ToolRespon
 
 	// Create the knowledge graph
 	zap.L().Debug("Creating knowledge graph", zap.Int("entities", len(entitiesResponse)), zap.Int("relations", len(relationsResponse)))
-	kg := KnowledgeGraph{
+	graph := KnowledgeGraph{
 		Entities:  entitiesResponse,
 		Relations: relationsResponse,
 	}
 
 	// Convert response to json string
-	zap.L().Debug("Converting knowledge graph to JSON", zap.Any("knowledge_graph", kg))
-	jsonResponse, err := toolJSONResponse(ctx, kg)
+	zap.L().Debug("Converting knowledge graph to JSON", zap.Any("knowledge_graph", graph))
+	jsonResponse, err := toolJSONResponse(ctx, graph)
 	if err != nil {
 		span.RecordError(err)
 		return nil, err
