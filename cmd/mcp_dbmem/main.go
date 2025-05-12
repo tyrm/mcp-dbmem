@@ -53,7 +53,7 @@ func main() {
 
 	flag.Global(rootCmd, config.Defaults)
 
-	serverStartCmd := &cobra.Command{
+	directCmd := &cobra.Command{
 		Use:   "direct",
 		Short: "the mcp server will connect directly to the database",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -63,9 +63,9 @@ func main() {
 			return run(cmd.Context(), direct.Direct, args)
 		},
 	}
-	rootCmd.AddCommand(serverStartCmd)
+	rootCmd.AddCommand(directCmd)
 
-	databaseMigrateCmd := &cobra.Command{
+	migrateCmd := &cobra.Command{
 		Use:   "migrate",
 		Short: "run db migrations",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -75,7 +75,7 @@ func main() {
 			return run(cmd.Context(), migrate.Migrate, args)
 		},
 	}
-	rootCmd.AddCommand(databaseMigrateCmd)
+	rootCmd.AddCommand(migrateCmd)
 
 	err = rootCmd.Execute()
 	if err != nil {
