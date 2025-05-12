@@ -6,6 +6,6 @@ services:
     ports:
       - "5432:5432/tcp"
     environment:
-      - POSTGRES_PASSWORD=mcp-pgmem
-      - POSTGRES_USER=mcp-pgmem
-      - POSTGRES_DB=mcp-pgmem
+      - POSTGRES_PASSWORD=mcp-dbmem
+      - POSTGRES_USER=mcp-dbmem
+      - POSTGRES_DB=mcp-dbmem

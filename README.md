@@ -1,10 +1,10 @@
-# MCP-PGMEM
+# MCP-DBMEM
 
 A poorly written Go-based memory management system for the Metoro Control Protocol (MCP), providing a persistent knowledge graph implementation.
 
 ## Overview
 
-MCP-PGMEM is a memory management service that implements a knowledge graph using PostgreSQL as the backend storage. It provides a set of tools for managing entities, relations, and observations within the knowledge graph.
+MCP-DBMEM is a memory management service that implements a knowledge graph using PostgreSQL as the backend storage. It provides a set of tools for managing entities, relations, and observations within the knowledge graph.
 
 ## Features
 
@@ -42,7 +42,7 @@ The service provides the following tools:
         "run",
         "-i",
         "--rm",
-        "tyrm/mcp-pgmem",
+        "tyrm/mcp-dbmem",
         "direct"
       ]
     }
@@ -67,7 +67,7 @@ make build
 ### Running
 
 ```bash
-./bin/mcp-pgmem
+./bin/mcp-dbmem
 ```
 
 ## Project Structure

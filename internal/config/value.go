@@ -24,9 +24,9 @@ var Defaults = Values{
 	DBType:      "postgres",
 	DBAddress:   "localhost",
 	DBPort:      5432,
-	DBUser:      "mcp-pgmem",
-	DBPassword:  "mcp-pgmem",
-	DBDatabase:  "mcp-pgmem",
+	DBUser:      "mcp-dbmem",
+	DBPassword:  "mcp-dbmem",
+	DBDatabase:  "mcp-dbmem",
 	DBTLSMode:   "disable",
 	DBTLSCACert: "",
 }

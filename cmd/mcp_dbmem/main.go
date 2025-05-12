@@ -44,13 +44,12 @@ func main() {
 	viper.Set(config.Keys.SoftwareVersion, v)
 
 	rootCmd := &cobra.Command{
-		Use:           "mcp-pgmem",
+		Use:           "mcp-dbmem",
 		Short:         "", //TODO
 		Version:       v,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
-
 	flag.Global(rootCmd, config.Defaults)
 
 	directCmd := &cobra.Command{
@@ -63,6 +62,7 @@ func main() {
 			return run(cmd.Context(), direct.Direct, args)
 		},
 	}
+	flag.Direct(directCmd, config.Defaults)
 	rootCmd.AddCommand(directCmd)
 
 	migrateCmd := &cobra.Command{
@@ -75,6 +75,7 @@ func main() {
 			return run(cmd.Context(), migrate.Migrate, args)
 		},
 	}
+	flag.Migrate(migrateCmd, config.Defaults)
 	rootCmd.AddCommand(migrateCmd)
 
 	err = rootCmd.Execute()
