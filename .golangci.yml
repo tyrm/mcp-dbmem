@@ -61,6 +61,13 @@ linters:
     - nilnil
     - noctx
     - nolintlint
+    - nonamedreturns
+    - nosprintfhostport
+    - paralleltest
+    - perfsprint
+    - prealloc
+    - predeclared
+
 
   settings:
     ireturn:

@@ -7,15 +7,15 @@ type Error error
 
 var (
 	// ErrGenID is returned when creating a new ID can't be generated for a new model.
-	ErrGenID Error = fmt.Errorf("can't generate id")
+	ErrGenID Error = errors.New("can't generate id")
 	// ErrNoEntries is returned when a caller expected an entry for a query, but none was found.
-	ErrNoEntries Error = fmt.Errorf("no entries")
+	ErrNoEntries Error = errors.New("no entries")
 	// ErrMultipleEntries is returned when a caller expected ONE entry for a query, but multiples were found.
-	ErrMultipleEntries Error = fmt.Errorf("multiple entries")
+	ErrMultipleEntries Error = errors.New("multiple entries")
 	// ErrUnknown denotes an unknown database error.
-	ErrUnknown Error = fmt.Errorf("unknown error")
+	ErrUnknown Error = errors.New("unknown error")
 	// ErrInvalidSort is returned when a sort type is requested the model can't do.
-	ErrInvalidSort Error = fmt.Errorf("invalid sort")
+	ErrInvalidSort Error = errors.New("invalid sort")
 )
 
 // AlreadyExistsError is returned when a caller tries to insert a database entry that already exists in the db.
