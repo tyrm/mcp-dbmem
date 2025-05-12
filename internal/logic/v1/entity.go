@@ -8,19 +8,19 @@ import (
 	"go.uber.org/zap"
 )
 
-// Entity represents an entity in the knowledge graph
+// Entity represents an entity in the knowledge graph.
 type Entity struct {
 	Name         string   `json:"name" jsonschema:"required,description=The name of the entity"`
 	Type         string   `json:"entityType" jsonschema:"required,description=The type of the entity"`
 	Observations []string `json:"observations" jsonschema:"required,description=An array of observation contents associated with the entity"`
 }
 
-// CreateEntitiesArgs represents the arguments for creating entities
+// CreateEntitiesArgs represents the arguments for creating entities.
 type CreateEntitiesArgs struct {
 	Entities []Entity `json:"entities" jsonschema:"required,description=An array of observation contents associated with the entity"`
 }
 
-// CreateEntities creates entities in the knowledge graph
+// CreateEntities creates entities in the knowledge graph.
 func (l *Logic) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*mcp.ToolResponse, error) {
 	ctx, span := tracer.Start(ctx, "CreateEntities", tracerAttrs...)
 	defer span.End()
@@ -71,12 +71,12 @@ func (l *Logic) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*m
 	return toolResponse, nil
 }
 
-// DeleteEntitiesArgs represents the arguments for deleting entities
+// DeleteEntitiesArgs represents the arguments for deleting entities.
 type DeleteEntitiesArgs struct {
 	EntityNames []string `json:"entityNames" jsonschema:"required,description=An array of entity names to delete"`
 }
 
-// DeleteEntities deletes entities from the knowledge graph
+// DeleteEntities deletes entities from the knowledge graph.
 func (l *Logic) DeleteEntities(ctx context.Context, args DeleteEntitiesArgs) (*mcp.ToolResponse, error) {
 	ctx, span := tracer.Start(ctx, "DeleteEntities", tracerAttrs...)
 	defer span.End()

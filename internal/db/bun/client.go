@@ -60,7 +60,7 @@ type ClientConfig struct {
 	TLSCACert string
 }
 
-// New creates a new bun database client
+// New creates a new bun database client.
 func New(ctx context.Context, c ClientConfig) (*Client, error) {
 	var newBun *Client
 	var err error

@@ -21,10 +21,19 @@ linters:
     - errname
     - errorlint
     - exhaustive
+    - exptostd
+    - fatcontext
+    - forcetypeassert
+    - funcorder
+    - funlen
+    - ginkgolinter
+    - gocheckcompilerdirectives
+    - gochecksumtype
     - gocognit
     - goconst
     - gocritic
     - gocyclo
+    - godot
     - goheader
     - gosec
     - importas

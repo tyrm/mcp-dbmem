@@ -11,24 +11,24 @@ import (
 	"go.uber.org/zap"
 )
 
-// AddObservationsArgs represents the arguments for creating Observations
+// AddObservationsArgs represents the arguments for creating Observations.
 type AddObservationsArgs struct {
 	Observations []AddObservation `json:"observations" jsonschema:"required,description=An array of observation contents to add"`
 }
 
-// AddObservation represents an observation associated with an entity
+// AddObservation represents an observation associated with an entity.
 type AddObservation struct {
 	EntityName string   `json:"entityName" jsonschema:"required,description=The name of the entity to add the observations to"`
 	Contents   []string `json:"contents" jsonschema:"required,description=An array of observation contents to addAn array of observations"`
 }
 
-// AddedObservationsResp represents the response for creating Observations
+// AddedObservationsResp represents the response for creating Observations.
 type AddedObservationsResp struct {
 	EntityName        string   `json:"entityName" jsonschema:"required,description=The name of the entity containing the observations"`
 	AddedObservations []string `json:"addedObservations" jsonschema:"required,description=An array of observations"`
 }
 
-// AddObservations creates Observations on entities in the knowledge graph
+// AddObservations creates Observations on entities in the knowledge graph.
 func (l *Logic) AddObservations(ctx context.Context, args AddObservationsArgs) (*mcp.ToolResponse, error) {
 	ctx, span := tracer.Start(ctx, "AddObservations", tracerAttrs...)
 	defer span.End()
@@ -75,18 +75,18 @@ func (l *Logic) AddObservations(ctx context.Context, args AddObservationsArgs) (
 	return toolResponse, nil
 }
 
-// DeleteObservationsArgs represents the arguments for deleting Observations
+// DeleteObservationsArgs represents the arguments for deleting Observations.
 type DeleteObservationsArgs struct {
 	Deletions []DeleteObservation `json:"deletions" jsonschema:"required,description=An array of observations to delete"`
 }
 
-// DeleteObservation represents an observation associated with an entity
+// DeleteObservation represents an observation associated with an entity.
 type DeleteObservation struct {
 	EntityName   string   `json:"entityName" jsonschema:"required,description=The name of the entity containing the observations"`
 	Observations []string `json:"observations" jsonschema:"required,description=An array of observations to delete"`
 }
 
-// DeleteObservations deletes Observations on entities in the knowledge graph
+// DeleteObservations deletes Observations on entities in the knowledge graph.
 func (l *Logic) DeleteObservations(ctx context.Context, args DeleteObservationsArgs) (*mcp.ToolResponse, error) {
 	ctx, span := tracer.Start(ctx, "DeleteObservations", tracerAttrs...)
 	defer span.End()

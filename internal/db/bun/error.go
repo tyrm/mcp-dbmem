@@ -27,7 +27,7 @@ func NewErrAlreadyExists(msg string) error {
 	return &AlreadyExistsError{message: msg}
 }
 
-// ProcessError replaces any known values with our own db.Error types
+// ProcessError replaces any known values with our own db.Error types.
 func (c *Client) ProcessError(err error) db.Error {
 	switch {
 	case err == nil:
@@ -39,7 +39,7 @@ func (c *Client) ProcessError(err error) db.Error {
 	}
 }
 
-// processMySQLError processes an error
+// processMySQLError processes an error.
 func processMySQLError(err error) db.Error {
 	// Attempt to cast as mysql
 	myErr := &mysql.MySQLError{}
@@ -52,7 +52,7 @@ func processMySQLError(err error) db.Error {
 	return err
 }
 
-// processPostgresError processes an error, replacing any postgres specific errors with our own error type
+// processPostgresError processes an error, replacing any postgres specific errors with our own error type.
 func processPostgresError(err error) db.Error {
 	// Attempt to cast as postgres
 	var pgErr *pgconn.PgError

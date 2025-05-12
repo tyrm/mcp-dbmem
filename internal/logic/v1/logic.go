@@ -9,7 +9,7 @@ import (
 	"github.com/tyrm/mcp-dbmem/internal/logic"
 )
 
-// Logic implements the program logic
+// Logic implements the program logic.
 type Logic struct {
 	DB db.DB
 }

@@ -9,17 +9,17 @@ import (
 	"go.uber.org/zap"
 )
 
-// KnowledgeGraph represents the entire knowledge graph
+// KnowledgeGraph represents the entire knowledge graph.
 type KnowledgeGraph struct {
 	Entities  []Entity   `json:"entities"`
 	Relations []Relation `json:"relations"`
 }
 
-// ReadGraphArgs represents the arguments for reading the knowledge graph
+// ReadGraphArgs represents the arguments for reading the knowledge graph.
 type ReadGraphArgs struct {
 }
 
-// ReadGraph reads the entire knowledge graph
+// ReadGraph reads the entire knowledge graph.
 func (l *Logic) ReadGraph(ctx context.Context, _ ReadGraphArgs) (*mcp.ToolResponse, error) {
 	ctx, span := tracer.Start(ctx, "ReadGraph", tracerAttrs...)
 	defer span.End()
