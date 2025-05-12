@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// Relation represents a relation between two entities in a knowledge graph.
 type Relation struct {
 	ID        int64     `bun:",pk,autoincrement"`
 	CreatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp"`
