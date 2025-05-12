@@ -18,6 +18,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Direct is the action to start the mcp server with a direct connection to the database.
 var Direct action.Action = func(ctx context.Context, _ []string) error {
 	zap.L().Info("starting pgmcp")
 

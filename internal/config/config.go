@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ApplicationName contains the application identifier.
 const ApplicationName = "mcp-dbmem"
 
 // Init starts config collection.

@@ -70,7 +70,7 @@ func main() {
 	migrateCmd := &cobra.Command{
 		Use:   "migrate",
 		Short: "run db migrations",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return preRun(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

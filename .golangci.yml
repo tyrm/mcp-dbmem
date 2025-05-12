@@ -67,7 +67,11 @@ linters:
     - perfsprint
     - prealloc
     - predeclared
-
+    - promlinter
+    - protogetter
+    - reassign
+    - recvcheck
+    - revive
 
   settings:
     ireturn:
