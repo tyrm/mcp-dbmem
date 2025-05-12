@@ -37,7 +37,16 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	}
 
 	// create database client
-	dbClient, err := bun.New(ctx)
+	dbClient, err := bun.New(ctx, bun.ClientConfig{
+		Type:      viper.GetString(config.Keys.DBType),
+		Address:   viper.GetString(config.Keys.DBAddress),
+		Port:      viper.GetUint16(config.Keys.DBPort),
+		User:      viper.GetString(config.Keys.DBUser),
+		Password:  viper.GetString(config.Keys.DBPassword),
+		Database:  viper.GetString(config.Keys.DBDatabase),
+		TLSMode:   viper.GetString(config.Keys.DBTLSMode),
+		TLSCACert: viper.GetString(config.Keys.DBTLSCACert),
+	})
 	if err != nil {
 		zap.L().Error("Error creating bun client", zap.Error(err))
 

@@ -3,14 +3,24 @@ version: "2"
 
 linters:
   enable:
-    - importas
-    - ireturn
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - containedctx
+    - contextcheck
+    - copyloopvar
+    - cyclop
+    - dupl
     - gocognit
-    - gocritic
     - goconst
+    - gocritic
     - gocyclo
     - goheader
     - gosec
+    - importas
+    - ireturn
 
   settings:
     ireturn:

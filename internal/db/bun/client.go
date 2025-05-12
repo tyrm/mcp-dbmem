@@ -16,7 +16,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
-	"github.com/spf13/viper"
 	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/db"
 	"github.com/tyrm/mcp-dbmem/internal/db/bun/migrations"
@@ -50,25 +49,36 @@ type Client struct {
 
 var _ db.DB = (*Client)(nil)
 
+type ClientConfig struct {
+	Type      string
+	Address   string
+	Port      uint16
+	User      string
+	Password  string
+	Database  string
+	TLSMode   string
+	TLSCACert string
+}
+
 // New creates a new bun database client
-func New(ctx context.Context) (*Client, error) {
+func New(ctx context.Context, c ClientConfig) (*Client, error) {
 	var newBun *Client
 	var err error
-	dbType := dbTypePostgres
+	dbType := c.Type
 
 	switch dbType {
 	case dbTypeMysql:
-		newBun, err = myConn(ctx)
+		newBun, err = myConn(ctx, c)
 		if err != nil {
 			return nil, err
 		}
 	case dbTypePostgres:
-		newBun, err = pgConn(ctx)
+		newBun, err = pgConn(ctx, c)
 		if err != nil {
 			return nil, err
 		}
 	case dbTypeSqlite:
-		newBun, err = sqliteConn(ctx)
+		newBun, err = sqliteConn(ctx, c)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +86,7 @@ func New(ctx context.Context) (*Client, error) {
 		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
 	}
 
-	newBun.db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(viper.GetString(config.Keys.DBDatabase))))
+	newBun.db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(c.Database)))
 
 	// Add a query hook to log all queries (debug)
 	// newBun.db.AddQueryHook(bunzap.NewQueryHook(bunzap.QueryHookOptions{
@@ -89,11 +99,11 @@ func New(ctx context.Context) (*Client, error) {
 
 // privates
 
-func sqliteConn(ctx context.Context) (*Client, error) {
+func sqliteConn(ctx context.Context, c ClientConfig) (*Client, error) {
 	// validate bun address has actually been set
-	dbAddress := viper.GetString(config.Keys.DBAddress)
+	dbAddress := c.Address
 	if dbAddress == "" {
-		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", viper.GetString(config.Keys.DBAddress))
+		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", c.Address)
 	}
 
 	// Drop anything fancy from DB address
@@ -136,8 +146,8 @@ func sqliteConn(ctx context.Context) (*Client, error) {
 	return conn, nil
 }
 
-func myConn(ctx context.Context) (*Client, error) {
-	opts, err := deriveBunDBMyOptions()
+func myConn(ctx context.Context, c ClientConfig) (*Client, error) {
+	opts, err := deriveBunDBMyOptions(c)
 	if err != nil {
 		return nil, fmt.Errorf("could not create bundb mysql options: %s", err)
 	}
@@ -160,8 +170,8 @@ func myConn(ctx context.Context) (*Client, error) {
 	return conn, nil
 }
 
-func pgConn(ctx context.Context) (*Client, error) {
-	opts, err := deriveBunDBPGOptions()
+func pgConn(ctx context.Context, c ClientConfig) (*Client, error) {
+	opts, err := deriveBunDBPGOptions(c)
 	if err != nil {
 		return nil, fmt.Errorf("could not doCreate bundb postgres options: %s", err)
 	}
@@ -181,70 +191,23 @@ func pgConn(ctx context.Context) (*Client, error) {
 	return conn, nil
 }
 
-func deriveBunDBMyOptions() (string, error) {
+func deriveBunDBMyOptions(c ClientConfig) (string, error) {
 	// these are all optional, the bun adapter figures out defaults
-	port := viper.GetInt(config.Keys.DBPort)
-	address := viper.GetString(config.Keys.DBAddress)
-	username := viper.GetString(config.Keys.DBUser)
-	password := viper.GetString(config.Keys.DBPassword)
+	port := c.Port
+	address := c.Address
+	username := c.User
+	password := c.Password
 
 	// validate database
-	database := viper.GetString(config.Keys.DBDatabase)
+	database := c.Database
 	if database == "" {
 		return "", errors.New("no database set")
 	}
 
-	var tlsConfig *tls.Config
-	tlsMode := viper.GetString(config.Keys.DBTLSMode)
-	switch tlsMode {
-	case dbTLSModeDisable, dbTLSModeUnset:
-		break // nothing to do
-	case dbTLSModeEnable:
-		/* #nosec G402 */
-		tlsConfig = &tls.Config{
-			InsecureSkipVerify: true,
-		}
-	case dbTLSModeRequire:
-		tlsConfig = &tls.Config{
-			InsecureSkipVerify: false,
-			ServerName:         viper.GetString(config.Keys.DBAddress),
-			MinVersion:         tls.VersionTLS12,
-		}
-	}
-
-	caCertPath := viper.GetString(config.Keys.DBTLSCACert)
-	if tlsConfig != nil && caCertPath != "" {
-		// load the system cert pool first -- we'll append the given CA cert to this
-		certPool, err := x509.SystemCertPool()
-		if err != nil {
-			return "", fmt.Errorf("error fetching system CA cert pool: %s", err)
-		}
-
-		// open the file itself and make sure there's something in it
-		/* #nosec G304 */
-		caCertBytes, err := os.ReadFile(caCertPath)
-		if err != nil {
-			return "", fmt.Errorf("error opening CA certificate at %s: %s", caCertPath, err)
-		}
-		if len(caCertBytes) == 0 {
-			return "", fmt.Errorf("ca cert at %s was empty", caCertPath)
-		}
-
-		// make sure we have a PEM block
-		caPem, _ := pem.Decode(caCertBytes)
-		if caPem == nil {
-			return "", fmt.Errorf("could not parse cert at %s into PEM", caCertPath)
-		}
-
-		// parse the PEM block into the certificate
-		caCert, err := x509.ParseCertificate(caPem.Bytes)
-		if err != nil {
-			return "", fmt.Errorf("could not parse cert at %s into x509 certificate: %s", caCertPath, err)
-		}
-
-		// we're happy, add it to the existing pool and then use this pool in our tls config
-		certPool.AddCert(caCert)
-		tlsConfig.RootCAs = certPool
+	tlsConfig, err := makeTLSConfig(c)
+	if err != nil {
+		zap.L().Error("Error creating TLS config", zap.Error(err))
+		return "", fmt.Errorf("could not create tls config: %s", err)
 	}
 
 	cfg := ""
@@ -258,7 +221,7 @@ func deriveBunDBMyOptions() (string, error) {
 	if address != "" {
 		cfg += "tcp(" + address
 		if port > 0 {
-			cfg += ":" + strconv.Itoa(port)
+			cfg += ":" + strconv.Itoa(int(port))
 		}
 		cfg += ")"
 	}
@@ -276,21 +239,59 @@ func deriveBunDBMyOptions() (string, error) {
 	return cfg, nil
 }
 
-func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
+func deriveBunDBPGOptions(c ClientConfig) (*pgx.ConnConfig, error) {
 	// these are all optional, the bun adapter figures out defaults
-	port := viper.GetInt(config.Keys.DBPort)
-	address := viper.GetString(config.Keys.DBAddress)
-	username := viper.GetString(config.Keys.DBUser)
-	password := viper.GetString(config.Keys.DBPassword)
+	port := c.Port
+	address := c.Address
+	username := c.User
+	password := c.Password
 
 	// validate database
-	database := viper.GetString(config.Keys.DBDatabase)
+	database := c.Database
 	if database == "" {
 		return nil, errors.New("no database set")
 	}
 
+	tlsConfig, err := makeTLSConfig(c)
+	if err != nil {
+		zap.L().Error("Error creating TLS config", zap.Error(err))
+		return nil, fmt.Errorf("could not create tls config: %s", err)
+	}
+
+	cfg, _ := pgx.ParseConfig("")
+	if address != "" {
+		cfg.Host = address
+	}
+	if port > 0 {
+		cfg.Port = port
+	}
+
+	if username != "" {
+		cfg.User = username
+	}
+	if password != "" {
+		cfg.Password = password
+	}
+	if tlsConfig != nil {
+		cfg.TLSConfig = tlsConfig
+	}
+	cfg.Database = database
+	cfg.PreferSimpleProtocol = true
+	cfg.RuntimeParams["application_name"] = config.ApplicationName
+
+	return cfg, nil
+}
+
+// https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql
+func setConnectionValues(sqldb *sql.DB) {
+	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
+	sqldb.SetMaxOpenConns(maxOpenConns)
+	sqldb.SetMaxIdleConns(maxOpenConns)
+}
+
+func makeTLSConfig(c ClientConfig) (*tls.Config, error) {
 	var tlsConfig *tls.Config
-	tlsMode := viper.GetString(config.Keys.DBTLSMode)
+	tlsMode := c.TLSMode
 	switch tlsMode {
 	case dbTLSModeDisable, dbTLSModeUnset:
 		break // nothing to do
@@ -302,12 +303,12 @@ func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
 	case dbTLSModeRequire:
 		tlsConfig = &tls.Config{
 			InsecureSkipVerify: false,
-			ServerName:         viper.GetString(config.Keys.DBAddress),
+			ServerName:         c.Address,
 			MinVersion:         tls.VersionTLS12,
 		}
 	}
 
-	caCertPath := viper.GetString(config.Keys.DBTLSCACert)
+	caCertPath := c.TLSCACert
 	if tlsConfig != nil && caCertPath != "" {
 		// load the system cert pool first -- we'll append the given CA cert to this
 		certPool, err := x509.SystemCertPool()
@@ -342,35 +343,7 @@ func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
 		tlsConfig.RootCAs = certPool
 	}
 
-	cfg, _ := pgx.ParseConfig("")
-	if address != "" {
-		cfg.Host = address
-	}
-	if port > 0 {
-		cfg.Port = uint16(port)
-	}
-
-	if username != "" {
-		cfg.User = username
-	}
-	if password != "" {
-		cfg.Password = password
-	}
-	if tlsConfig != nil {
-		cfg.TLSConfig = tlsConfig
-	}
-	cfg.Database = database
-	cfg.PreferSimpleProtocol = true
-	cfg.RuntimeParams["application_name"] = config.ApplicationName
-
-	return cfg, nil
-}
-
-// https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql
-func setConnectionValues(sqldb *sql.DB) {
-	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
-	sqldb.SetMaxOpenConns(maxOpenConns)
-	sqldb.SetMaxIdleConns(maxOpenConns)
+	return tlsConfig, nil
 }
 
 func getErrConn(dbConn *bun.DB) *Client {

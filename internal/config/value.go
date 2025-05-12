@@ -11,7 +11,7 @@ type Values struct {
 	// database
 	DBType      string
 	DBAddress   string
-	DBPort      int
+	DBPort      uint16
 	DBUser      string
 	DBPassword  string
 	DBDatabase  string
