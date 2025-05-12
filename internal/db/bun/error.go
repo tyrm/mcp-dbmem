@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgconn"
 	"github.com/tyrm/mcp-dbmem/internal/db"
 	"go.uber.org/zap"
@@ -36,6 +37,19 @@ func (c *Client) ProcessError(err error) db.Error {
 	default:
 		return c.errProc(err)
 	}
+}
+
+// processMySQLError processes an error
+func processMySQLError(err error) db.Error {
+	// Attempt to cast as mysql
+	myErr := &mysql.MySQLError{}
+	ok := errors.As(err, &myErr)
+	if !ok {
+		return err
+	}
+
+	zap.L().Debug("mysql error", zap.Int("code", int(myErr.Number)), zap.Error(myErr))
+	return err
 }
 
 // processPostgresError processes an error, replacing any postgres specific errors with our own error type

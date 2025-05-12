@@ -365,6 +365,13 @@ func getErrConn(dbConn *bun.DB) *Client {
 		errProc = processPostgresError
 	case dialect.SQLite:
 		errProc = processSQLiteError
+	case dialect.MSSQL:
+		panic("mssql not supported")
+	case dialect.MySQL:
+		errProc = processMySQLError
+	case dialect.Oracle:
+		panic("oracle not supported")
+	case dialect.Invalid:
 	default:
 		panic("unknown dialect name: " + dbConn.Dialect().Name().String())
 	}
