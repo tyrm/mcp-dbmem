@@ -15,6 +15,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const minimumHashLength = 7
+
 // Version is the software version.
 var Version string
 
@@ -34,23 +36,22 @@ func main() {
 	zap.ReplaceGlobals(zapLogger)
 
 	// set software version
-	var v string
-	if len(Commit) < 7 {
-		v = "v" + Version
+	var version string
+	if len(Commit) < minimumHashLength {
+		version = "version" + Version
 	} else {
-		v = "v" + Version + "-" + Commit[:7]
+		version = "version" + Version + "-" + Commit[:7]
 	}
 
-	viper.Set(config.Keys.SoftwareVersion, v)
+	viper.Set(config.Keys.SoftwareVersion, version)
 
 	rootCmd := &cobra.Command{
-		Use:           "mcp-pgmem",
-		Short:         "", //TODO
-		Version:       v,
+		Use:           "mcp-dbmem",
+		Short:         "", // TODO
+		Version:       version,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
-
 	flag.Global(rootCmd, config.Defaults)
 
 	directCmd := &cobra.Command{
@@ -63,18 +64,20 @@ func main() {
 			return run(cmd.Context(), direct.Direct, args)
 		},
 	}
+	flag.Direct(directCmd, config.Defaults)
 	rootCmd.AddCommand(directCmd)
 
 	migrateCmd := &cobra.Command{
 		Use:   "migrate",
 		Short: "run db migrations",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
 			return preRun(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run(cmd.Context(), migrate.Migrate, args)
 		},
 	}
+	flag.Migrate(migrateCmd, config.Defaults)
 	rootCmd.AddCommand(migrateCmd)
 
 	err = rootCmd.Execute()
@@ -85,7 +88,7 @@ func main() {
 
 func preRun(cmd *cobra.Command) error {
 	if err := config.Init(cmd.Flags()); err != nil {
-		return fmt.Errorf("error initializing config: %s", err)
+		return fmt.Errorf("error initializing config: %w", err)
 	}
 
 	return nil

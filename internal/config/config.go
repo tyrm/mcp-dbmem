@@ -7,7 +7,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-const ApplicationName = "mcp-pgmem"
+// ApplicationName contains the application identifier.
+const ApplicationName = "mcp-dbmem"
 
 // Init starts config collection.
 func Init(flags *pflag.FlagSet) error {

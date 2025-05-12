@@ -3,31 +3,51 @@ package direct
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
-	"github.com/tyrm/mcp-dbmem/internal/config"
-	"github.com/uptrace/uptrace-go/uptrace"
 	"os"
 	"os/signal"
 	"syscall"
 
 	mcp "github.com/metoro-io/mcp-golang"
 	"github.com/metoro-io/mcp-golang/transport/stdio"
+	"github.com/spf13/viper"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action"
+	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/db/bun"
 	v1 "github.com/tyrm/mcp-dbmem/internal/logic/v1"
+	"github.com/uptrace/uptrace-go/uptrace"
 	"go.uber.org/zap"
 )
 
+// Direct is the action to start the mcp server with a direct connection to the database.
 var Direct action.Action = func(ctx context.Context, _ []string) error {
 	zap.L().Info("starting pgmcp")
 
-	uptrace.ConfigureOpentelemetry(
-		uptrace.WithServiceName("mcp-dbmem"),
-		uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
-	)
+	// Setup tracing
+	if viper.GetString(config.Keys.UptraceDSN) != "" {
+		uptrace.ConfigureOpentelemetry(
+			uptrace.WithServiceName("mcp-dbmem"),
+			uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
+			uptrace.WithDSN(viper.GetString(config.Keys.UptraceDSN)),
+		)
+		// Send buffered spans and free resources.
+		defer func() {
+			if err := uptrace.Shutdown(context.Background()); err != nil {
+				zap.L().Error("Error shutting down uptrace", zap.Error(err))
+			}
+		}()
+	}
 
 	// create database client
-	dbClient, err := bun.New(ctx)
+	dbClient, err := bun.New(ctx, bun.ClientConfig{
+		Type:      viper.GetString(config.Keys.DBType),
+		Address:   viper.GetString(config.Keys.DBAddress),
+		Port:      viper.GetUint16(config.Keys.DBPort),
+		User:      viper.GetString(config.Keys.DBUser),
+		Password:  viper.GetString(config.Keys.DBPassword),
+		Database:  viper.GetString(config.Keys.DBDatabase),
+		TLSMode:   viper.GetString(config.Keys.DBTLSMode),
+		TLSCACert: viper.GetString(config.Keys.DBTLSCACert),
+	})
 	if err != nil {
 		zap.L().Error("Error creating bun client", zap.Error(err))
 
@@ -75,8 +95,6 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 		return err
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-
 	// ** start application **
 	errChan := make(chan error)
 
@@ -102,6 +120,5 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	}
 
 	zap.L().Info("done")
-	cancel()
 	return nil
 }

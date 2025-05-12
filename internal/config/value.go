@@ -5,10 +5,13 @@ type Values struct {
 	LogLevel        string
 	SoftwareVersion string
 
+	// uptrace
+	UptraceDSN string
+
 	// database
 	DBType      string
 	DBAddress   string
-	DBPort      int
+	DBPort      uint16
 	DBUser      string
 	DBPassword  string
 	DBDatabase  string
@@ -24,9 +27,9 @@ var Defaults = Values{
 	DBType:      "postgres",
 	DBAddress:   "localhost",
 	DBPort:      5432,
-	DBUser:      "mcp-pgmem",
-	DBPassword:  "mcp-pgmem",
-	DBDatabase:  "mcp-pgmem",
+	DBUser:      "mcp-dbmem",
+	DBPassword:  "mcp-dbmem",
+	DBDatabase:  "mcp-dbmem",
 	DBTLSMode:   "disable",
 	DBTLSCACert: "",
 }

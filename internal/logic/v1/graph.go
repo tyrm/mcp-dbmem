@@ -9,11 +9,17 @@ import (
 	"go.uber.org/zap"
 )
 
-// ReadGraphArgs represents the arguments for reading the knowledge graph
+// KnowledgeGraph represents the entire knowledge graph.
+type KnowledgeGraph struct {
+	Entities  []Entity   `json:"entities"`
+	Relations []Relation `json:"relations"`
+}
+
+// ReadGraphArgs represents the arguments for reading the knowledge graph.
 type ReadGraphArgs struct {
 }
 
-// ReadGraph reads the entire knowledge graph
+// ReadGraph reads the entire knowledge graph.
 func (l *Logic) ReadGraph(ctx context.Context, _ ReadGraphArgs) (*mcp.ToolResponse, error) {
 	ctx, span := tracer.Start(ctx, "ReadGraph", tracerAttrs...)
 	defer span.End()
@@ -64,14 +70,14 @@ func (l *Logic) ReadGraph(ctx context.Context, _ ReadGraphArgs) (*mcp.ToolRespon
 
 	// Create the knowledge graph
 	zap.L().Debug("Creating knowledge graph", zap.Int("entities", len(entitiesResponse)), zap.Int("relations", len(relationsResponse)))
-	kg := KnowledgeGraph{
+	graph := KnowledgeGraph{
 		Entities:  entitiesResponse,
 		Relations: relationsResponse,
 	}
 
 	// Convert response to json string
-	zap.L().Debug("Converting knowledge graph to JSON", zap.Any("knowledge_graph", kg))
-	jsonResponse, err := toolJSONResponse(ctx, kg)
+	zap.L().Debug("Converting knowledge graph to JSON", zap.Any("knowledge_graph", graph))
+	jsonResponse, err := toolJSONResponse(ctx, graph)
 	if err != nil {
 		span.RecordError(err)
 		return nil, err
