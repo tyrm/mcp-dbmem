@@ -59,9 +59,10 @@ func (l *Logic) AddObservations(ctx context.Context, args AddObservationsArgs) (
 				span.RecordError(err)
 				return nil, err
 			}
-
-			response = append(response, newResponse)
+			newResponse.AddedObservations = append(newResponse.AddedObservations, newObservation.Contents)
 		}
+
+		response = append(response, newResponse)
 	}
 
 	// convert response to json string
