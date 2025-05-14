@@ -279,7 +279,7 @@ func (d *DirectAdapter) DeleteObservations(ctx context.Context, args DeleteObser
 			// Delete the observation
 			zap.L().Debug("Deleting observation", zap.Int64("id", observationToDelete.ID), zap.String("content", content))
 			if err := d.logic.DeleteObservation(ctx, observationToDelete); err != nil {
-				zap.L().Error("Failed to create observation", zap.Error(err), zap.Int64("id", observationToDelete.ID), zap.String("content", content))
+				zap.L().Error("Failed to delete observation", zap.Error(err), zap.Int64("id", observationToDelete.ID), zap.String("content", content))
 				span.RecordError(err)
 				return nil, err
 			}
