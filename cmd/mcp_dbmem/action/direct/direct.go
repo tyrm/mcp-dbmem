@@ -11,6 +11,7 @@ import (
 	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/spf13/viper"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action"
+	"github.com/tyrm/mcp-dbmem/internal/adapter"
 	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/db/bun"
 	v1 "github.com/tyrm/mcp-dbmem/internal/logic/v1"
@@ -61,37 +62,39 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	}()
 
 	// build logic
-	logic := v1.Logic{
+	logic := &v1.Logic{
 		DB: dbClient,
 	}
 
+	direct := adapter.NewDirectAdapter(logic)
+
 	// add tools
 	server := mcp.NewServer(stdio.NewStdioServerTransport())
-	if err := server.RegisterTool("create_entities", "Create multiple new entities in the knowledge graph", logic.CreateEntities); err != nil {
+	if err := server.RegisterTool("create_entities", "Create multiple new entities in the knowledge graph", direct.CreateEntities); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("create_relations", "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice", logic.CreateRelations); err != nil {
+	if err := server.RegisterTool("create_relations", "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice", direct.CreateRelations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("add_observations", "Add new observations to existing entities in the knowledge graph", logic.AddObservations); err != nil {
+	if err := server.RegisterTool("add_observations", "Add new observations to existing entities in the knowledge graph", direct.AddObservations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("delete_entities", "Delete multiple entities and their associated relations from the knowledge graph", logic.DeleteEntities); err != nil {
+	if err := server.RegisterTool("delete_entities", "Delete multiple entities and their associated relations from the knowledge graph", direct.DeleteEntities); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("delete_observations", "Delete specific observations from entities in the knowledge graph", logic.DeleteObservations); err != nil {
+	if err := server.RegisterTool("delete_observations", "Delete specific observations from entities in the knowledge graph", direct.DeleteObservations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("delete_relations", "Delete multiple relations from the knowledge graph", logic.DeleteRelations); err != nil {
+	if err := server.RegisterTool("delete_relations", "Delete multiple relations from the knowledge graph", direct.DeleteRelations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("read_graph", "Read the entire knowledge graph", logic.ReadGraph); err != nil {
+	if err := server.RegisterTool("read_graph", "Read the entire knowledge graph", direct.ReadGraph); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("search_nodes", "Search for nodes in the knowledge graph based on a query", logic.SearchNodes); err != nil {
+	if err := server.RegisterTool("search_nodes", "Search for nodes in the knowledge graph based on a query", direct.SearchNodes); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("open_nodes", "Open specific nodes in the knowledge graph by their names", logic.OpenNodes); err != nil {
+	if err := server.RegisterTool("open_nodes", "Open specific nodes in the knowledge graph by their names", direct.OpenNodes); err != nil {
 		return err
 	}
 
