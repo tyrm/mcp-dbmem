@@ -78,7 +78,7 @@ linters:
     - sqlclosecheck
     - tagalign
     - testableexamples
-    - testpackage
+    #- testpackage
     - thelper
     - tparallel
     - unconvert
