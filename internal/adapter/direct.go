@@ -22,6 +22,10 @@ type DirectAdapter struct {
 	logic logic.Logic
 }
 
+func (d *DirectAdapter) Apply(server *mcp.Server) error {
+	return apply(d, server)
+}
+
 func NewDirectAdapter(logic logic.Logic) *DirectAdapter {
 	return &DirectAdapter{
 		logic: logic,

@@ -16,6 +16,39 @@ type Adapter interface {
 	DeleteObservations(ctx context.Context, args DeleteObservationsArgs) (*mcp.ToolResponse, error)
 	CreateRelations(ctx context.Context, args CreateRelationsArgs) (*mcp.ToolResponse, error)
 	DeleteRelations(ctx context.Context, args DeleteRelationsArgs) (*mcp.ToolResponse, error)
+	Apply(server *mcp.Server) error
+}
+
+func apply[A Adapter](a A, server *mcp.Server) error {
+	if err := server.RegisterTool("create_entities", "Create multiple new entities in the knowledge graph", a.CreateEntities); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("create_relations", "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice", a.CreateRelations); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("add_observations", "Add new observations to existing entities in the knowledge graph", a.AddObservations); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("delete_entities", "Delete multiple entities and their associated relations from the knowledge graph", a.DeleteEntities); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("delete_observations", "Delete specific observations from entities in the knowledge graph", a.DeleteObservations); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("delete_relations", "Delete multiple relations from the knowledge graph", a.DeleteRelations); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("read_graph", "Read the entire knowledge graph", a.ReadGraph); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("search_nodes", "Search for nodes in the knowledge graph based on a query", a.SearchNodes); err != nil {
+		return err
+	}
+	if err := server.RegisterTool("open_nodes", "Open specific nodes in the knowledge graph by their names", a.OpenNodes); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Models

@@ -62,9 +62,9 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	}()
 
 	// build logic
-	logic := &v1.Logic{
+	logic := v1.NewLogic(v1.LogicConfig{
 		DB: dbClient,
-	}
+	})
 
 	direct := adapter.NewDirectAdapter(logic)
 
