@@ -94,6 +94,7 @@ linters:
       allow:
         - error
         - db.Error
+        - logic.Error
 
     mnd:
       ignored-files:
