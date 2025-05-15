@@ -334,7 +334,6 @@ func (d *DirectAdapter) CreateRelations(ctx context.Context, args CreateRelation
 	}
 
 	return toolResponse, err
-
 }
 
 func (d *DirectAdapter) DeleteRelations(ctx context.Context, args DeleteRelationsArgs) (*mcp.ToolResponse, error) {

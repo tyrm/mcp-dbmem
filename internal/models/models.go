@@ -1,3 +1,3 @@
 package models
 
-// Package models contains the data models for the application.
+// Package api contains the data api for the application.
