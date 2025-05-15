@@ -38,7 +38,7 @@ func Test_toolJSONResponse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resp, err := ToolJSONResponse(context.Background(), tt.input)
+			resp, err := ToolJSONResponse(t.Context(), tt.input)
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, resp)

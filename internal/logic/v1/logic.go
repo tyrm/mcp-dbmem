@@ -137,19 +137,3 @@ func (l *Logic) DeleteRelation(ctx context.Context, relation *models.Relation) e
 
 	return logic.ProcessError(l.db.DeleteRelation(ctx, relation))
 }
-
-//func toolJSONResponse(ctx context.Context, response any) (*mcp.ToolResponse, error) {
-//	_, span := tracer.Start(ctx, "toolJSONResponse", tracerAttrs...)
-//	defer span.End()
-//
-//	// convert response to json string
-//	jsonResponse, err := json.MarshalIndent(response, "", "  ")
-//	if err != nil {
-//		span.RecordError(err)
-//		return nil, err
-//	}
-//
-//	return mcp.NewToolResponse(
-//		mcp.NewTextContent(string(jsonResponse)),
-//	), nil
-//}
