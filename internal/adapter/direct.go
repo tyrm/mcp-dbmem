@@ -22,14 +22,14 @@ type DirectAdapter struct {
 	logic logic.Logic
 }
 
-func (d *DirectAdapter) Apply(server *mcp.Server) error {
-	return apply(d, server)
-}
-
 func NewDirectAdapter(logic logic.Logic) *DirectAdapter {
 	return &DirectAdapter{
 		logic: logic,
 	}
+}
+
+func (d *DirectAdapter) Apply(server *mcp.Server) error {
+	return apply(d, server)
 }
 
 func (d *DirectAdapter) CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*mcp.ToolResponse, error) {
