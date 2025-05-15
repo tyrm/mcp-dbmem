@@ -1,0 +1,1 @@
+goreleaser build --clean --snapshot
