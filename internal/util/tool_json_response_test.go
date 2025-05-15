@@ -1,7 +1,6 @@
 package util
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -15,6 +14,8 @@ func (u unmarshalable) MarshalJSON() ([]byte, error) {
 }
 
 func Test_toolJSONResponse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name     string
 		input    any
@@ -36,17 +37,18 @@ func Test_toolJSONResponse(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			resp, err := ToolJSONResponse(t.Context(), tt.input)
-			if tt.wantErr {
+	for _, row := range tests {
+		t.Run(row.name, func(t *testing.T) {
+			t.Parallel()
+			resp, err := ToolJSONResponse(t.Context(), row.input)
+			if row.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, resp)
 			} else {
 				assert.NoError(t, err)
 				if assert.NotNil(t, resp) {
 					if assert.Len(t, resp.Content, 1) {
-						assert.Equal(t, resp.Content[0].TextContent.Text, tt.wantJSON)
+						assert.Equal(t, resp.Content[0].TextContent.Text, row.wantJSON)
 					}
 				}
 			}
