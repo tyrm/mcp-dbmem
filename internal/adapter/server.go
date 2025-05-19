@@ -4,6 +4,7 @@ import (
 	"context"
 
 	mcp "github.com/metoro-io/mcp-golang"
+	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/logic"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -11,13 +12,7 @@ import (
 )
 
 var serverTracer = otel.Tracer("internal/adapter.ServerAdapter")
-var serverTracerAttrs = []trace.SpanStartOption{
-	trace.WithAttributes(
-		attribute.String("service.name", "mcp-dbmem"),
-		attribute.String("component", "server"),
-		attribute.String("span.kind", "server"),
-	),
-}
+var serverTracerAttrs = []trace.SpanStartOption
 
 type ServerAdapter struct {
 	logic logic.Logic

@@ -21,12 +21,12 @@ import (
 
 // Server is the action to start the mcp server with a direct connection to the database.
 var Server action.Action = func(ctx context.Context, _ []string) error {
-	zap.L().Info("starting pgmcp server")
+	zap.L().Info(fmt.Sprintf("starting %s server", config.ApplicationName))
 
 	// Setup tracing
 	if viper.GetString(config.Keys.UptraceDSN) != "" {
 		uptrace.ConfigureOpentelemetry(
-			uptrace.WithServiceName("mcp-dbmem"),
+			uptrace.WithServiceName(config.ApplicationName),
 			uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
 			uptrace.WithDSN(viper.GetString(config.Keys.UptraceDSN)),
 		)

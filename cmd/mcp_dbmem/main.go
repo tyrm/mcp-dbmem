@@ -47,7 +47,7 @@ func main() {
 	viper.Set(config.Keys.SoftwareVersion, version)
 
 	rootCmd := &cobra.Command{
-		Use:           "mcp-dbmem",
+		Use:           config.ApplicationName,
 		Short:         "", // TODO
 		Version:       version,
 		SilenceErrors: true,

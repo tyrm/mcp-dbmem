@@ -21,12 +21,12 @@ import (
 
 // Direct is the action to start the mcp server with a direct connection to the database.
 var Direct action.Action = func(ctx context.Context, _ []string) error {
-	zap.L().Info("starting pgmcp")
+	zap.L().Info("starting " + config.ApplicationName)
 
 	// Setup tracing
 	if viper.GetString(config.Keys.UptraceDSN) != "" {
 		uptrace.ConfigureOpentelemetry(
-			uptrace.WithServiceName("mcp-dbmem"),
+			uptrace.WithServiceName(config.ApplicationName),
 			uptrace.WithServiceVersion(viper.GetString(config.Keys.SoftwareVersion)),
 			uptrace.WithDSN(viper.GetString(config.Keys.UptraceDSN)),
 		)
@@ -70,31 +70,9 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 
 	// add tools
 	server := mcp.NewServer(stdio.NewStdioServerTransport())
-	if err := server.RegisterTool("create_entities", "Create multiple new entities in the knowledge graph", direct.CreateEntities); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("create_relations", "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice", direct.CreateRelations); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("add_observations", "Add new observations to existing entities in the knowledge graph", direct.AddObservations); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("delete_entities", "Delete multiple entities and their associated relations from the knowledge graph", direct.DeleteEntities); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("delete_observations", "Delete specific observations from entities in the knowledge graph", direct.DeleteObservations); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("delete_relations", "Delete multiple relations from the knowledge graph", direct.DeleteRelations); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("read_graph", "Read the entire knowledge graph", direct.ReadGraph); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("search_nodes", "Search for nodes in the knowledge graph based on a query", direct.SearchNodes); err != nil {
-		return err
-	}
-	if err := server.RegisterTool("open_nodes", "Open specific nodes in the knowledge graph by their names", direct.OpenNodes); err != nil {
+	if err := direct.Apply(server); err != nil {
+		zap.L().Error("Error applying direct adapter", zap.Error(err))
+
 		return err
 	}
 
