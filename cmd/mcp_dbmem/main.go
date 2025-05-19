@@ -10,6 +10,7 @@ import (
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action/direct"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action/migrate"
+	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action/server"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/flag"
 	"github.com/tyrm/mcp-dbmem/internal/config"
 	"go.uber.org/zap"
@@ -54,31 +55,9 @@ func main() {
 	}
 	flag.Global(rootCmd, config.Defaults)
 
-	directCmd := &cobra.Command{
-		Use:   "direct",
-		Short: "the mcp server will connect directly to the database",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return preRun(cmd)
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return run(cmd.Context(), direct.Direct, args)
-		},
-	}
-	flag.Direct(directCmd, config.Defaults)
-	rootCmd.AddCommand(directCmd)
-
-	migrateCmd := &cobra.Command{
-		Use:   "migrate",
-		Short: "run db migrations",
-		PreRunE: func(cmd *cobra.Command, _ []string) error {
-			return preRun(cmd)
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return run(cmd.Context(), migrate.Migrate, args)
-		},
-	}
-	flag.Migrate(migrateCmd, config.Defaults)
-	rootCmd.AddCommand(migrateCmd)
+	rootCmd.AddCommand(directCommands())
+	rootCmd.AddCommand(migrateCommands())
+	rootCmd.AddCommand(serverCommands())
 
 	err = rootCmd.Execute()
 	if err != nil {
@@ -96,4 +75,55 @@ func preRun(cmd *cobra.Command) error {
 
 func run(ctx context.Context, action action.Action, args []string) error {
 	return action(ctx, args)
+}
+
+// directCommands returns the 'direct' subcommand.
+func directCommands() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:   "direct",
+		Short: "the mcp server will connect directly to the database",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return preRun(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return run(cmd.Context(), direct.Direct, args)
+		},
+	}
+	flag.Direct(rootCmd, config.Defaults)
+
+	return rootCmd
+}
+
+// migrateCommands returns the 'migrate' subcommand.
+func migrateCommands() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:   "migrate",
+		Short: "run db migrations",
+		PreRunE: func(cmd *cobra.Command, _ []string) error {
+			return preRun(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return run(cmd.Context(), migrate.Migrate, args)
+		},
+	}
+	flag.Migrate(rootCmd, config.Defaults)
+
+	return rootCmd
+}
+
+// serverCommands returns the 'server' subcommand.
+func serverCommands() *cobra.Command {
+	serverCmd := &cobra.Command{
+		Use:   "server",
+		Short: "start the server",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return preRun(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return run(cmd.Context(), server.Server, args)
+		},
+	}
+	flag.Server(serverCmd, config.Defaults)
+
+	return serverCmd
 }
