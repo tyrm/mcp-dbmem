@@ -65,7 +65,7 @@ var Server action.Action = func(ctx context.Context, _ []string) error {
 		DB: dbClient,
 	})
 
-	direct := adapter.NewDirectAdapter(logic)
+	direct := adapter.NewServerAdapter(logic)
 
 	// add tools
 	server := mcp.NewServer(stdio.NewStdioServerTransport())
