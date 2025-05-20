@@ -5,8 +5,8 @@ go 1.24
 replace (
 	// Pinning to v1.10.0 to address a vulnerability in the gin-gonic/gin package.
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.10.0
-	// Pinning to v1.9.3 to address a vulnerability in the github.com/sirupsen/logrus package.
-	github.com/jackc/pgx => github.com/jackc/pgx v3.6.2+incompatible
+	// Pinning to v1.9.3 to address a vulnerability in the github.com/jackc/pgx.
+	github.com/jackc/pgx/v4 => github.com/jackc/pgx/v4 v4.18.3
 	// Pinning to v1.9.3 to address a vulnerability in the github.com/sirupsen/logrus package.
 	github.com/sirupsen/logrus => github.com/sirupsen/logrus v1.9.3
 )
