@@ -2,14 +2,14 @@ module github.com/tyrm/mcp-dbmem
 
 go 1.24
 
+replace (
 // Pinning to v1.10.0 to address a vulnerability in the gin-gonic/gin package.
-replace github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.10.0
-
+ github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.10.0
 // Pinning to v1.9.3 to address a vulnerability in the github.com/sirupsen/logrus package.
-replace github.com/jackc/pgx => github.com/jackc/pgx v3.6.2+incompatible
-
+ github.com/jackc/pgx => github.com/jackc/pgx v3.6.2+incompatible
 // Pinning to v1.9.3 to address a vulnerability in the github.com/sirupsen/logrus package.
-replace github.com/sirupsen/logrus => github.com/sirupsen/logrus v1.9.3
+ github.com/sirupsen/logrus => github.com/sirupsen/logrus v1.9.3
+)
 
 require (
 	github.com/go-sql-driver/mysql v1.9.2
