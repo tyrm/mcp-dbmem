@@ -2,6 +2,15 @@ module github.com/tyrm/mcp-dbmem
 
 go 1.24
 
+replace (
+// Pinning to v1.10.0 to address a vulnerability in the gin-gonic/gin package.
+ github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.10.0
+// Pinning to v1.9.3 to address a vulnerability in the github.com/sirupsen/logrus package.
+ github.com/jackc/pgx => github.com/jackc/pgx v3.6.2+incompatible
+// Pinning to v1.9.3 to address a vulnerability in the github.com/sirupsen/logrus package.
+ github.com/sirupsen/logrus => github.com/sirupsen/logrus v1.9.3
+)
+
 require (
 	github.com/go-sql-driver/mysql v1.9.2
 	github.com/jackc/pgconn v1.14.3
@@ -10,6 +19,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.20.1
+	github.com/stretchr/testify v1.10.0
 	github.com/uptrace/bun v1.2.11
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.11
 	github.com/uptrace/bun/dialect/pgdialect v1.2.11
@@ -57,7 +67,6 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.8.0 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
@@ -85,7 +94,7 @@ require (
 	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
 	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/net v0.39.0 // indirect
+	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250422160041-2d3770c4ea7f // indirect
