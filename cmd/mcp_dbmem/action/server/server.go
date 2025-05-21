@@ -12,6 +12,7 @@ import (
 	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/db/bun"
 	"github.com/tyrm/mcp-dbmem/internal/http"
+	"github.com/tyrm/mcp-dbmem/internal/http/apiv1"
 	v1 "github.com/tyrm/mcp-dbmem/internal/logic/v1"
 	"github.com/uptrace/uptrace-go/uptrace"
 	"go.uber.org/zap"
@@ -68,14 +69,24 @@ var Server action.Action = func(ctx context.Context, _ []string) error {
 	httpServer, err := http.NewServer(ctx, http.ServerConfig{
 		Logic:           logic,
 		ApplicationName: config.ApplicationName,
-		HttpBind:        "",
+		HttpBind:        ":4200",
 	})
 	if err != nil {
 		zap.L().Error("can't start http server", zap.Error(err))
 		cancel()
 		return err
 	}
+	// create web modules
+	var webModules = make([]http.Module, 0)
 
+	zap.L().Info("loading apiv1 module")
+	apiV1 := apiv1.New(logic)
+	webModules = append(webModules, apiV1)
+
+	// add modules to server
+	for _, mod := range webModules {
+		mod.Route(httpServer)
+	}
 	// ** start application **
 	errChan := make(chan error)
 

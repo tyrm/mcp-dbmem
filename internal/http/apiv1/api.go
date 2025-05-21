@@ -10,6 +10,12 @@ type API struct {
 	logic logic.Logic
 }
 
+func New(logic logic.Logic) *API {
+	return &API{
+		logic: logic,
+	}
+}
+
 func (a *API) Name() string {
 	return "apiv1"
 }

@@ -1,7 +1,7 @@
 package path
 
 const (
-	Base = "/apiv1"
+	Base = "/api"
 	V1   = Base + "/v1"
 
 	Entities     = "/entities"

@@ -90,6 +90,11 @@ linters:
     - whitespace
 
   settings:
+
+    gomoddirectives:
+      replace-allow-list:
+        - github.com/sirupsen/logrus
+
     ireturn:
       allow:
         - error
@@ -103,7 +108,6 @@ linters:
     varnamelen:
       ignore-names:
         - up
-
 
 run:
   issues-exit-code: 1
