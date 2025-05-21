@@ -2,6 +2,7 @@ package bun
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 
 	"github.com/tyrm/mcp-dbmem/internal/db"
@@ -22,7 +23,34 @@ func (c *Client) DeleteEntity(ctx context.Context, entity *models.Entity) db.Err
 	ctx, span := tracer.Start(ctx, "DeleteEntity", tracerAttrs...)
 	defer span.End()
 
-	err := c.delete(ctx, entity)
+	tx, err := c.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return c.ProcessError(err)
+	}
+
+	if err := deleteAllRelationsByEntityID(ctx, tx, entity.ID); err != nil {
+		span.RecordError(err)
+		if err := tx.Rollback(); err != nil {
+			span.RecordError(err)
+			return c.ProcessError(err)
+		}
+		return c.ProcessError(err)
+	}
+
+	if err := deleteAllObservationsByEntityID(ctx, tx, entity.ID); err != nil {
+		span.RecordError(err)
+		if err := tx.Rollback(); err != nil {
+			span.RecordError(err)
+			return c.ProcessError(err)
+		}
+		return c.ProcessError(err)
+	}
+
+	tx.NewDelete().
+		Model(&models.Relation{}).
+		WherePK()
+
+	err = c.delete(ctx, entity)
 	span.RecordError(err)
 	return err
 }

@@ -99,11 +99,11 @@ func (d *DirectAdapter) DeleteEntities(ctx context.Context, args DeleteEntitiesA
 			continue
 		}
 
-		if err := d.logic.DeleteAllObservationsByEntityID(ctx, entity.ID); err != nil {
-			zap.L().Error("Can't delete observations", zap.Error(err), zap.String("entityName", entityName))
-			span.RecordError(err)
-			return nil, err
-		}
+		//if err := d.logic.DeleteAllObservationsByEntityID(ctx, entity.ID); err != nil {
+		//	zap.L().Error("Can't delete observations", zap.Error(err), zap.String("entityName", entityName))
+		//	span.RecordError(err)
+		//	return nil, err
+		//}
 
 		if err := d.logic.DeleteEntity(ctx, entity); err != nil {
 			zap.L().Error("Can't delete entity", zap.Error(err), zap.String("entityName", entityName))
@@ -112,9 +112,7 @@ func (d *DirectAdapter) DeleteEntities(ctx context.Context, args DeleteEntitiesA
 		}
 	}
 
-	return mcp.NewToolResponse(
-		mcp.NewTextContent("Entities deleted successfully"),
-	), nil
+	return RespEntityDeleted, nil
 }
 
 func (d *DirectAdapter) ReadGraph(ctx context.Context, _ ReadGraphArgs) (*mcp.ToolResponse, error) {
@@ -286,9 +284,7 @@ func (d *DirectAdapter) DeleteObservations(ctx context.Context, args DeleteObser
 		}
 	}
 
-	return mcp.NewToolResponse(
-		mcp.NewTextContent("Observations deleted successfully"),
-	), nil
+	return RespObservationDeleted, nil
 }
 
 func (d *DirectAdapter) CreateRelations(ctx context.Context, args CreateRelationsArgs) (*mcp.ToolResponse, error) {
@@ -382,9 +378,7 @@ func (d *DirectAdapter) DeleteRelations(ctx context.Context, args DeleteRelation
 		}
 	}
 
-	return mcp.NewToolResponse(
-		mcp.NewTextContent("Relations deleted successfully"),
-	), nil
+	return RespRelationDeleted, nil
 }
 
 var _ Adapter = (*DirectAdapter)(nil)

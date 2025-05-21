@@ -70,12 +70,12 @@ func (l *Logic) CreateObservation(ctx context.Context, observation *models.Obser
 	return logic.ProcessError(l.db.CreateObservation(ctx, observation))
 }
 
-func (l *Logic) DeleteAllObservationsByEntityID(ctx context.Context, entityID int64) error {
-	ctx, span := tracer.Start(ctx, "DeleteAllObservationsByEntityID", tracerAttrs...)
-	defer span.End()
-
-	return logic.ProcessError(l.db.DeleteAllObservationsByEntityID(ctx, entityID))
-}
+//func (l *Logic) DeleteAllObservationsByEntityID(ctx context.Context, entityID int64) error {
+//	ctx, span := tracer.Start(ctx, "DeleteAllObservationsByEntityID", tracerAttrs...)
+//	defer span.End()
+//
+//	return logic.ProcessError(l.db.DeleteAllObservationsByEntityID(ctx, entityID))
+//}
 
 func (l *Logic) DeleteObservation(ctx context.Context, observation *models.Observation) error {
 	ctx, span := tracer.Start(ctx, "DeleteObservation", tracerAttrs...)
@@ -102,12 +102,12 @@ func (l *Logic) CreateRelation(ctx context.Context, relation *models.Relation) e
 	return logic.ProcessError(l.db.CreateRelation(ctx, relation))
 }
 
-func (l *Logic) DeleteAllRelationsByEntityID(ctx context.Context, entityID int64) error {
-	ctx, span := tracer.Start(ctx, "DeleteAllRelationsByEntityID", tracerAttrs...)
-	defer span.End()
-
-	return logic.ProcessError(l.db.DeleteAllRelationsByEntityID(ctx, entityID))
-}
+//func (l *Logic) DeleteAllRelationsByEntityID(ctx context.Context, entityID int64) error {
+//	ctx, span := tracer.Start(ctx, "DeleteAllRelationsByEntityID", tracerAttrs...)
+//	defer span.End()
+//
+//	return logic.ProcessError(l.db.DeleteAllRelationsByEntityID(ctx, entityID))
+//}
 
 func (l *Logic) ReadAllRelations(ctx context.Context) ([]*models.Relation, error) {
 	ctx, span := tracer.Start(ctx, "ReadAllRelations", tracerAttrs...)

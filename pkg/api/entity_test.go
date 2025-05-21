@@ -2,51 +2,75 @@ package api
 
 import (
 	"errors"
-	"fmt"
+	"testing"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestEntityValidation(t *testing.T) {
+func testEntityValidation(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		name      string
-		input     Entity
+		input     *Entity
 		expectErr bool
-		error     error
+		errors    []struct {
+			Namespace string
+			Tag       string
+		}
 	}{
 		{
-			name:      "empty entity",
-			input:     Entity{},
+			name: "empty entity",
+			input: &Entity{
+				Name:         "",
+				Type:         "",
+				Observations: nil,
+			},
 			expectErr: true,
+			errors: []struct {
+				Namespace string
+				Tag       string
+			}{
+				{
+					Namespace: "Entity.Type",
+					Tag:       "required",
+				},
+				{
+					Namespace: "Entity.Name",
+					Tag:       "required",
+				},
+			},
 		},
 	}
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	for _, tt := range tests {
+	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			err := validate.Struct(tt.input)
 			if tt.expectErr {
 				assert.Error(t, err)
-				assert.Equal(t, tt.error, err)
 
 				var validateErrs validator.ValidationErrors
 				if errors.As(err, &validateErrs) {
+					assert.Equal(t, 0, len(validateErrs))
 					for _, e := range validateErrs {
-						fmt.Println(e.Namespace())
-						fmt.Println(e.Field())
-						fmt.Println(e.StructNamespace())
-						fmt.Println(e.StructField())
-						fmt.Println(e.Tag())
-						fmt.Println(e.ActualTag())
-						fmt.Println(e.Kind())
-						fmt.Println(e.Type())
-						fmt.Println(e.Value())
-						fmt.Println(e.Param())
-						fmt.Println()
+						assert.Equal(t, tt.errors[i].Namespace, e.Namespace())
+						assert.Equal(t, tt.errors[i].Tag, e.Tag())
+						t.Log(e.Namespace())
+						t.Log(e.Field())
+						t.Log(e.StructNamespace())
+						t.Log(e.StructField())
+						t.Log(e.Tag())
+						t.Log(e.ActualTag())
+						t.Log(e.Kind())
+						t.Log(e.Type())
+						t.Log(e.Value())
+						t.Log(e.Param())
+						t.Log()
 					}
+				} else {
+					assert.Fail(t, "Expected validation errors, but got: %T", err)
 				}
 			} else {
 				assert.NoError(t, err)

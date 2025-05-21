@@ -18,24 +18,6 @@ func (c *Client) CreateRelation(ctx context.Context, relation *models.Relation) 
 	return err
 }
 
-func (c *Client) DeleteAllRelationsByEntityID(ctx context.Context, entityID int64) db.Error {
-	ctx, span := tracer.Start(ctx, "DeleteAllRelationsByEntityID", tracerAttrs...)
-	defer span.End()
-
-	query := c.db.
-		NewDelete().
-		Model((*models.Relation)(nil)).
-		Where("from_id = ?", entityID).
-		WhereOr("to_id = ?", entityID)
-
-	if _, err := query.Exec(ctx); err != nil {
-		span.RecordError(err)
-		return c.ProcessError(err)
-	}
-
-	return nil
-}
-
 func (c *Client) DeleteRelation(ctx context.Context, relation *models.Relation) db.Error {
 	ctx, span := tracer.Start(ctx, "DeleteRelation", tracerAttrs...)
 	defer span.End()
@@ -81,6 +63,23 @@ func (c *Client) ReadExactRelation(ctx context.Context, fromID, toID int64, rela
 	return relation, nil
 }
 
+func deleteAllRelationsByEntityID(ctx context.Context, c bun.IDB, entityID int64) db.Error {
+	ctx, span := tracer.Start(ctx, "deleteAllRelationsByEntityID", tracerAttrs...)
+	defer span.End()
+
+	query := c.
+		NewDelete().
+		Model((*models.Relation)(nil)).
+		Where("from_id = ?", entityID).
+		WhereOr("to_id = ?", entityID)
+
+	if _, err := query.Exec(ctx); err != nil {
+		span.RecordError(err)
+		return err
+	}
+
+	return nil
+}
 func newRelationQ(c bun.IDB, i *models.Relation) *bun.SelectQuery {
 	return c.
 		NewSelect().

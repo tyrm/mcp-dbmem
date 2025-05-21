@@ -6,6 +6,12 @@ import (
 	mcp "github.com/metoro-io/mcp-golang"
 )
 
+var (
+	RespEntityDeleted      = mcp.NewToolResponse(mcp.NewTextContent("Entities deleted successfully"))
+	RespObservationDeleted = mcp.NewToolResponse(mcp.NewTextContent("Observations deleted successfully"))
+	RespRelationDeleted    = mcp.NewToolResponse(mcp.NewTextContent("Relations deleted successfully"))
+)
+
 type Adapter interface {
 	CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*mcp.ToolResponse, error)
 	DeleteEntities(ctx context.Context, args DeleteEntitiesArgs) (*mcp.ToolResponse, error)
