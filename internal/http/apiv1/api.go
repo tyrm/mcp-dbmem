@@ -1,18 +1,21 @@
 package apiv1
 
 import (
+	"github.com/go-playground/validator/v10"
 	ihttp "github.com/tyrm/mcp-dbmem/internal/http"
 	"github.com/tyrm/mcp-dbmem/internal/http/path"
 	"github.com/tyrm/mcp-dbmem/internal/logic"
 )
 
 type API struct {
-	logic logic.Logic
+	logic    logic.Logic
+	validate *validator.Validate
 }
 
 func New(logic logic.Logic) *API {
 	return &API{
-		logic: logic,
+		logic:    logic,
+		validate: validator.New(validator.WithRequiredStructEnabled()),
 	}
 }
 

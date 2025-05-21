@@ -17,4 +17,5 @@ type DeleteRelationsRequest struct {
 }
 
 type DeleteRelationsResponse struct {
+	Success bool `json:"success"`
 }

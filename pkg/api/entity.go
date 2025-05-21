@@ -8,13 +8,17 @@ type Entity struct {
 }
 
 type CreateEntitiesRequest struct {
+	Entities []Entity `json:"entities" validate:"required,min=1"`
 }
 
 type CreateEntitiesResponse struct {
+	Entities []Entity `json:"entities"`
 }
 
 type DeleteEntitiesRequest struct {
+	EntityNames []string `json:"entityNames" validate:"required,min=1"`
 }
 
 type DeleteEntitiesResponse struct {
+	Success bool `json:"success"`
 }

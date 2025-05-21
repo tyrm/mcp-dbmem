@@ -10,4 +10,5 @@ type ReadGraphRequest struct {
 }
 
 type ReadGraphResponse struct {
+	KnowledgeGraph KnowledgeGraph `json:"knowledgeGraph"`
 }
