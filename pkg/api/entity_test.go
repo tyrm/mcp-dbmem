@@ -9,6 +9,7 @@ import (
 )
 
 func TestEntityValidation(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name      string
 		input     Entity
@@ -25,6 +26,7 @@ func TestEntityValidation(t *testing.T) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			err := validate.Struct(tt.input)
 			if tt.expectErr {
 				assert.Error(t, err)

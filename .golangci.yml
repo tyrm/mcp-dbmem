@@ -106,6 +106,8 @@ linters:
         - 'internal\\config\\.+\.go'
 
     varnamelen:
+      ignore-decls:
+        - c *gin.Context
       ignore-names:
         - up
 
