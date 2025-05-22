@@ -6,6 +6,12 @@ import (
 	mcp "github.com/metoro-io/mcp-golang"
 )
 
+var (
+	RespEntityDeleted      = mcp.NewToolResponse(mcp.NewTextContent("Entities deleted successfully"))
+	RespObservationDeleted = mcp.NewToolResponse(mcp.NewTextContent("Observations deleted successfully"))
+	RespRelationDeleted    = mcp.NewToolResponse(mcp.NewTextContent("Relations deleted successfully"))
+)
+
 type Adapter interface {
 	CreateEntities(ctx context.Context, args CreateEntitiesArgs) (*mcp.ToolResponse, error)
 	DeleteEntities(ctx context.Context, args DeleteEntitiesArgs) (*mcp.ToolResponse, error)
@@ -19,32 +25,32 @@ type Adapter interface {
 	Apply(server *mcp.Server) error
 }
 
-func apply[A Adapter](a A, server *mcp.Server) error {
-	if err := server.RegisterTool("create_entities", "Create multiple new entities in the knowledge graph", a.CreateEntities); err != nil {
+func apply[A Adapter](adapter A, server *mcp.Server) error {
+	if err := server.RegisterTool("create_entities", "Create multiple new entities in the knowledge graph", adapter.CreateEntities); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("create_relations", "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice", a.CreateRelations); err != nil {
+	if err := server.RegisterTool("create_relations", "Create multiple new relations between entities in the knowledge graph. Relations should be in active voice", adapter.CreateRelations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("add_observations", "Add new observations to existing entities in the knowledge graph", a.AddObservations); err != nil {
+	if err := server.RegisterTool("add_observations", "Add new observations to existing entities in the knowledge graph", adapter.AddObservations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("delete_entities", "Delete multiple entities and their associated relations from the knowledge graph", a.DeleteEntities); err != nil {
+	if err := server.RegisterTool("delete_entities", "Delete multiple entities and their associated relations from the knowledge graph", adapter.DeleteEntities); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("delete_observations", "Delete specific observations from entities in the knowledge graph", a.DeleteObservations); err != nil {
+	if err := server.RegisterTool("delete_observations", "Delete specific observations from entities in the knowledge graph", adapter.DeleteObservations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("delete_relations", "Delete multiple relations from the knowledge graph", a.DeleteRelations); err != nil {
+	if err := server.RegisterTool("delete_relations", "Delete multiple relations from the knowledge graph", adapter.DeleteRelations); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("read_graph", "Read the entire knowledge graph", a.ReadGraph); err != nil {
+	if err := server.RegisterTool("read_graph", "Read the entire knowledge graph", adapter.ReadGraph); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("search_nodes", "Search for nodes in the knowledge graph based on a query", a.SearchNodes); err != nil {
+	if err := server.RegisterTool("search_nodes", "Search for nodes in the knowledge graph based on adapter query", adapter.SearchNodes); err != nil {
 		return err
 	}
-	if err := server.RegisterTool("open_nodes", "Open specific nodes in the knowledge graph by their names", a.OpenNodes); err != nil {
+	if err := server.RegisterTool("open_nodes", "Open specific nodes in the knowledge graph by their names", adapter.OpenNodes); err != nil {
 		return err
 	}
 
