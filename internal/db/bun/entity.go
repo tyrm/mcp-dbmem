@@ -46,13 +46,24 @@ func (c *Client) DeleteEntity(ctx context.Context, entity *models.Entity) db.Err
 		return c.ProcessError(err)
 	}
 
-	tx.NewDelete().
-		Model(&models.Relation{}).
+	query := tx.NewDelete().
+		Model(entity).
 		WherePK()
+	if _, err := query.Exec(ctx); err != nil {
+		span.RecordError(err)
+		if err := tx.Rollback(); err != nil {
+			span.RecordError(err)
+			return c.ProcessError(err)
+		}
+		return c.ProcessError(err)
+	}
 
-	err = c.delete(ctx, entity)
-	span.RecordError(err)
-	return err
+	if err := tx.Commit(); err != nil {
+		span.RecordError(err)
+		return c.ProcessError(err)
+	}
+
+	return nil
 }
 
 func (c *Client) ReadAllEntities(ctx context.Context) ([]*models.Entity, db.Error) {
