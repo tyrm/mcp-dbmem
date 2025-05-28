@@ -33,11 +33,19 @@ The service provides the following tools:
 
 ### Claude
 
+#### Docker
+
 ```json
 {
   "mcpServers": {
     "memory": {
       "command": "docker",
+      "env": {
+        "DB_ADDRESS": "localhost",
+        "DB_USER": "mcp-dbmem",
+        "DB_PASSWORD": "mcp-dbmem",
+        "DB_DATABASE": "mcp-dbmem"
+      },
       "args": [
         "run",
         "-i",
@@ -49,6 +57,32 @@ The service provides the following tools:
   }
 }
 ```
+
+#### Binary
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "docker",
+      "env": {
+        "DB_ADDRESS": "localhost",
+        "DB_USER": "mcp-dbmem",
+        "DB_PASSWORD": "mcp-dbmem",
+        "DB_DATABASE": "mcp-dbmem"
+      },
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "tyrm/mcp-dbmem",
+        "direct"
+      ]
+    }
+  }
+}
+```
+
 
 ## Development
 
