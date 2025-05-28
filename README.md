@@ -64,7 +64,7 @@ The service provides the following tools:
 {
   "mcpServers": {
     "memory": {
-      "command": "docker",
+      "command": "/path/to/mcp-dbmem",
       "env": {
         "DB_ADDRESS": "localhost",
         "DB_USER": "mcp-dbmem",
@@ -72,10 +72,6 @@ The service provides the following tools:
         "DB_DATABASE": "mcp-dbmem"
       },
       "args": [
-        "run",
-        "-i",
-        "--rm",
-        "tyrm/mcp-dbmem",
         "direct"
       ]
     }
