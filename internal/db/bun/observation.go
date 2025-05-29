@@ -18,22 +18,6 @@ func (c *Client) CreateObservation(ctx context.Context, observation *models.Obse
 	return err
 }
 
-func (c *Client) DeleteAllObservationsByEntityID(ctx context.Context, entityID int64) db.Error {
-	ctx, span := tracer.Start(ctx, "DeleteAllObservationsByEntityID", tracerAttrs...)
-	defer span.End()
-
-	query := c.db.NewDelete().
-		Model((*models.Observation)(nil)).
-		Where("entity_id = ?", entityID)
-
-	if _, err := query.Exec(ctx); err != nil {
-		span.RecordError(err)
-		return c.ProcessError(err)
-	}
-
-	return nil
-}
-
 func (c *Client) DeleteObservation(ctx context.Context, observation *models.Observation) db.Error {
 	ctx, span := tracer.Start(ctx, "DeleteObservation", tracerAttrs...)
 	defer span.End()
@@ -67,4 +51,20 @@ func newObservationQ(c bun.IDB, i *models.Observation) *bun.SelectQuery {
 	return c.
 		NewSelect().
 		Model(i)
+}
+
+func deleteAllObservationsByEntityID(ctx context.Context, c bun.IDB, entityID int64) db.Error {
+	ctx, span := tracer.Start(ctx, "deleteAllObservationsByEntityID", tracerAttrs...)
+	defer span.End()
+
+	query := c.NewDelete().
+		Model((*models.Observation)(nil)).
+		Where("entity_id = ?", entityID)
+
+	if _, err := query.Exec(ctx); err != nil {
+		span.RecordError(err)
+		return err
+	}
+
+	return nil
 }

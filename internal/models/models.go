@@ -1,3 +1,3 @@
 package models
 
-// Package models contains the data models for the application.
+// Package apiv1 contains the data apiv1 for the application.

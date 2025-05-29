@@ -90,19 +90,26 @@ linters:
     - whitespace
 
   settings:
+
+    gomoddirectives:
+      replace-allow-list:
+        - github.com/sirupsen/logrus
+
     ireturn:
       allow:
         - error
         - db.Error
+        - logic.Error
 
     mnd:
       ignored-files:
         - 'internal\\config\\.+\.go'
 
     varnamelen:
+      ignore-decls:
+        - c *gin.Context
       ignore-names:
         - up
-
 
 run:
   issues-exit-code: 1

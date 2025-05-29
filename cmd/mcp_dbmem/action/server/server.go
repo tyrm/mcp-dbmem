@@ -1,4 +1,4 @@
-package direct
+package server
 
 import (
 	"context"
@@ -7,21 +7,21 @@ import (
 	"os/signal"
 	"syscall"
 
-	mcp "github.com/metoro-io/mcp-golang"
-	"github.com/metoro-io/mcp-golang/transport/stdio"
 	"github.com/spf13/viper"
 	"github.com/tyrm/mcp-dbmem/cmd/mcp_dbmem/action"
-	"github.com/tyrm/mcp-dbmem/internal/adapter"
 	"github.com/tyrm/mcp-dbmem/internal/config"
 	"github.com/tyrm/mcp-dbmem/internal/db/bun"
+	"github.com/tyrm/mcp-dbmem/internal/http"
+	"github.com/tyrm/mcp-dbmem/internal/http/apiv1"
 	v1 "github.com/tyrm/mcp-dbmem/internal/logic/v1"
 	"github.com/uptrace/uptrace-go/uptrace"
 	"go.uber.org/zap"
 )
 
-// Direct is the action to start the mcp server with a direct connection to the database.
-var Direct action.Action = func(ctx context.Context, _ []string) error {
-	zap.L().Info("starting " + config.ApplicationName)
+// Server is the action to start the mcp server with a direct connection to the database.
+var Server action.Action = func(ctx context.Context, _ []string) error {
+	zap.L().Info(fmt.Sprintf("starting %s server", config.ApplicationName))
+	ctx, cancel := context.WithCancel(ctx)
 
 	// Setup tracing
 	if viper.GetString(config.Keys.UptraceDSN) != "" {
@@ -51,12 +51,12 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	})
 	if err != nil {
 		zap.L().Error("Error creating bun client", zap.Error(err))
+		cancel()
 
 		return err
 	}
 	defer func() {
-		err := dbClient.Close()
-		if err != nil {
+		if err := dbClient.Close(); err != nil {
 			zap.L().Error("Error closing bun client", zap.Error(err))
 		}
 	}()
@@ -66,16 +66,27 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 		DB: dbClient,
 	})
 
-	direct := adapter.NewDirectAdapter(logic)
-
-	// add tools
-	server := mcp.NewServer(stdio.NewStdioServerTransport())
-	if err := direct.Apply(server); err != nil {
-		zap.L().Error("Error applying direct adapter", zap.Error(err))
-
+	httpServer, err := http.NewServer(ctx, http.ServerConfig{
+		Logic:           logic,
+		ApplicationName: config.ApplicationName,
+		HttpBind:        ":4200",
+	})
+	if err != nil {
+		zap.L().Error("can't start http server", zap.Error(err))
+		cancel()
 		return err
 	}
+	// create web modules
+	var webModules = make([]http.Module, 0)
 
+	zap.L().Info("loading apiv1 module")
+	apiV1 := apiv1.New(logic)
+	webModules = append(webModules, apiV1)
+
+	// add modules to server
+	for _, mod := range webModules {
+		mod.Route(httpServer)
+	}
 	// ** start application **
 	errChan := make(chan error)
 
@@ -83,14 +94,14 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 	stopSigChan := make(chan os.Signal, 1)
 	signal.Notify(stopSigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// start mcp server
-	go func(s *mcp.Server, errChan chan error) {
-		zap.L().Info("starting mcp server")
-		err := s.Serve()
+	// start webserver
+	go func(s *http.Server, errChan chan error) {
+		zap.L().Info("starting http server")
+		err := s.Start()
 		if err != nil {
-			errChan <- fmt.Errorf("mcp server: %s", err.Error())
+			errChan <- fmt.Errorf("http server: %s", err.Error())
 		}
-	}(server, errChan)
+	}(httpServer, errChan)
 
 	// wait for event
 	select {
@@ -100,6 +111,7 @@ var Direct action.Action = func(ctx context.Context, _ []string) error {
 		zap.L().Fatal("fatal error", zap.Error(err))
 	}
 
+	cancel()
 	zap.L().Info("done")
 	return nil
 }
