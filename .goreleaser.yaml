@@ -52,6 +52,16 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
 
+docker_manifests:
+  - name_template: "tyrm/{{ .ProjectName }}:latest"
+    image_templates:
+      - "tyrm/{{ .ProjectName }}:latest-amd64"
+      - "tyrm/{{ .ProjectName }}:latest-arm64v8"
+  - name_template: "tyrm/{{ .ProjectName }}:{{ .Version }}"
+    image_templates:
+      - "tyrm/{{ .ProjectName }}:{{ .Version }}-amd64"
+      - "tyrm/{{ .ProjectName }}:{{ .Version }}-arm64v8"
+
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
